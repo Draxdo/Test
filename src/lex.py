@@ -52,7 +52,9 @@ KEYWORDS = {
   "RETURN": "return",
   "IF": "if",
   "ASM": "asm",
-  "ENDIF": "endif"
+  "ENDIF": "endif",
+  "TRUE": "true",
+  "FALSE": "false"
 }
 
 def is_valid_variable_name(name):
@@ -167,8 +169,16 @@ def lex(s):
     else:
       tmp2 += i
       
-    # if re.match(r"^(0[xX])?[A-Fa-f0-9]+$", tmp)
-    if re.match(r"^[0-9]+$", tmp):
+    if re.match(r"^(0[xX])?[A-Fa-f0-9]+$", tmp):
+      tokens.append(Token(TT_HEX, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
+
+    elif re.match(r"^[0-9]+$", tmp):
       tokens.append(Token(TT_INTEGER, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))

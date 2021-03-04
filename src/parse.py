@@ -30,7 +30,7 @@ class Expression:
 
 def checkExpr(tokens):
   if len(tokens) == 1:
-    if tokens[0].getTokenType() == "TT_INTEGER":
+    if tokens[0].getTokenType() == "TT_INTEGER" or tokens[0].getTokenType() == "TT_HEX":
       return True, "implicit_int", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_AMPOINT":
       return True, "ampoint", Node("int_val", right=tokens[0].getTokenValue())
@@ -42,6 +42,8 @@ def checkExpr(tokens):
       return True, "identifier", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_FUNCCALL":
       return True, "funccall", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_KEYWORD" and tokens[0].getTokenValue() in ["true", "false"]:
+      return True, "boolean", Node("int_val", right=tokens[0].getTokenValue())
     else:
       return False
       #quit("Parser Error: Unknown expression '{}' for implicit_int!".format(tokens[0]))

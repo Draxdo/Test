@@ -7,12 +7,18 @@
  Node: Type: funcdef Left: [
  Node: Type: int_dec Left: [
  Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
  Node: Type: return_statement Left: None Right: [
  Node: Type: int_val Left: None Right: 0 ]
  ]
  Right: y ]
  Right: [
- Node: Type: int_val Left: None Right: other() ]
+ Node: Type: int_val Left: None Right: 0x0a ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: true ]
  ]
  Right: [
 Token: TokenType: TT_IDENTIFIER TokenValue: main]

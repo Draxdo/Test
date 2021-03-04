@@ -60,10 +60,11 @@ main:
 	pushl %ebp
 	movl %esp, %ebp
 
-	subl $4, %esp
-	call other
-	movl %eax, %ecx
+	subl $8, %esp
+	movl $1, %ecx
 	movl %ecx, -4(%ebp)
+	movl $0x0a, %ecx
+	movl %ecx, -8(%ebp)
 	movl $0, %ecx
 	movl %ecx, %eax
 	leave

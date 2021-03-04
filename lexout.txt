@@ -12,7 +12,7 @@ Token: TokenType: TT_LBRACE TokenValue: None]
 , [
 Token: TokenType: TT_KEYWORD TokenValue: quit]
 , [
-Token: TokenType: TT_INTEGER TokenValue: 0]
+Token: TokenType: TT_HEX TokenValue: 0]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
@@ -30,7 +30,7 @@ Token: TokenType: TT_LBRACE TokenValue: None]
 , [
 Token: TokenType: TT_KEYWORD TokenValue: quit]
 , [
-Token: TokenType: TT_INTEGER TokenValue: 1]
+Token: TokenType: TT_HEX TokenValue: 1]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
@@ -64,7 +64,7 @@ Token: TokenType: TT_IDENTIFIER TokenValue: x]
 , [
 Token: TokenType: TT_PLUS TokenValue: None]
 , [
-Token: TokenType: TT_INTEGER TokenValue: 5]
+Token: TokenType: TT_HEX TokenValue: 5]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
@@ -88,17 +88,27 @@ Token: TokenType: TT_LBRACE TokenValue: None]
 , [
 Token: TokenType: TT_KEYWORD TokenValue: let]
 , [
+Token: TokenType: TT_IDENTIFIER TokenValue: x]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: true]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
 Token: TokenType: TT_IDENTIFIER TokenValue: y]
 , [
 Token: TokenType: TT_EQUALS TokenValue: None]
 , [
-Token: TokenType: TT_FUNCCALL TokenValue: other()]
+Token: TokenType: TT_HEX TokenValue: 0x0a]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
 Token: TokenType: TT_KEYWORD TokenValue: return]
 , [
-Token: TokenType: TT_INTEGER TokenValue: 0]
+Token: TokenType: TT_HEX TokenValue: 0]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [

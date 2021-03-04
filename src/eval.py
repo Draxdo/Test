@@ -148,6 +148,8 @@ def cmpl(node):
     for var in varias:
       v = v.replace("~~" + var, varias[var])
     asm(v)
+    cmpl(node.left)
+    return None
   
   elif node.left != None and node.left.type == "set_mov_equals":
     #print("hello")
@@ -174,8 +176,14 @@ def cmpl(node):
   elif node.left == None and node.type == "int_val":
     val = node.right
     g = None
+    
+    if val in ["true", "false"]:
+      if val == "true":
+        asm("movl $1, %ecx")
+      else:
+        asm("movl $0, %ecx")
         
-    if re.match(r'^["][^\n]*["]$', val):
+    elif re.match(r'^["][^\n]*["]$', val):
       if val not in strings.keys():
         x ="strLOCK" + str(n)
         n += 1
