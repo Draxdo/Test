@@ -1,0 +1,7 @@
+fn exit_noerr => {
+  quit 0;
+}
+
+fn exit_err => {
+  quit 1;
+}

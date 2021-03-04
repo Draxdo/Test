@@ -1,0 +1,64 @@
+[
+ Node: Type: global Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: None Right: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: y ]
+ Right: [
+ Node: Type: int_val Left: None Right: other() ]
+ ]
+ Right: [
+Token: TokenType: TT_IDENTIFIER TokenValue: main]
+ ]
+ ]
+ Right: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: quit_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: x ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: add Left: [
+ Node: Type: int_val Left: None Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: 5 ]
+ ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: 'a' ]
+ ]
+ Right: [
+Token: TokenType: TT_IDENTIFIER TokenValue: other]
+ ]
+ ]
+ Right: [
+ Node: Type: funcdef Left: [
+ Node: Type: quit_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 1 ]
+ ]
+ Right: [
+Token: TokenType: TT_IDENTIFIER TokenValue: exit_err]
+ ]
+ ]
+ Right: [
+ Node: Type: funcdef Left: [
+ Node: Type: quit_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: [
+Token: TokenType: TT_IDENTIFIER TokenValue: exit_noerr]
+ ]
+ ]
+ Right: None ]

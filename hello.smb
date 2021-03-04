@@ -1,0 +1,14 @@
+#program main
+#include stdlib.smb
+
+fn other => {
+  let x = 'a';
+  x = x + 5;
+  quit x;
+}
+
+fn main => {
+  let y = other();
+
+  return 0;
+}
