@@ -34,6 +34,8 @@ def checkExpr(tokens):
       return True, "implicit_int", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_AMPOINT":
       return True, "ampoint", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_PTR":
+      return True, "PTR", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_STRING":
       return True, "imp_string", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_CHAR":

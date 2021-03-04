@@ -29,6 +29,7 @@ TT_LBRACE = "TT_LBRACE"
 TT_RBRACE = "TT_RBRACE"
 TT_STRING = "TT_STRING"
 TT_AMPOINT = "TT_AMPOINT"
+TT_PTR = "TT_PTR"
 TT_FUNCCALL = "TT_FUNCCALL"
 TT_DEQUAL = "TT_DEQUAL"
 TT_COMMA = "TT_COMMA"
@@ -54,7 +55,8 @@ KEYWORDS = {
   "ASM": "asm",
   "ENDIF": "endif",
   "TRUE": "true",
-  "FALSE": "false"
+  "FALSE": "false",
+  "CONST": "const"
 }
 
 def is_valid_variable_name(name):
@@ -214,8 +216,17 @@ def lex(s):
       tmpid = ""
       tmp = ""
 
-    elif len(tmp) >= 2 and tmp[0] == "&" and is_valid_variable_name(tmp[1:]):
+    elif len(tmp) >= 2 and tmp[0] == "@" and is_valid_variable_name(tmp[1:]):
       tokens.append(Token(TT_AMPOINT, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
+      
+    elif len(tmp) >= 2 and tmp[0] == "$" and is_valid_variable_name(tmp[1:]):
+      tokens.append(Token(TT_PTR, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
@@ -231,6 +242,7 @@ def lex(s):
         tmp2 = ""
       tmpid = ""
       tmp = ""
+      
       
     elif is_valid_variable_name(tmp):
       tokens.append(Token(TT_IDENTIFIER, tmp))

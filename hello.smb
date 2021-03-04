@@ -1,15 +1,7 @@
-#program main
-#include stdlib.smb
-
-fn other => {
-  let x = 'a';
-  x = x + 5;
-  quit x;
-}
-
 fn main => {
-  let x = true;
-  let y = 0x0a;
-
-  return 0;
+  let x = 15 / 3;
+  asm "movl $6, ~~x";
+  let y = @x;
+  
+  return $y;
 }

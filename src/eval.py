@@ -42,6 +42,19 @@ n = 0
 
 def asm(s):
   funcs[currentFunc].append(s)
+  
+def divver(x, y):
+  x = int(x)
+  y = int(y)
+  z = 0
+  while True:
+    if x >= y:
+      x -= y
+      z += 1
+    else:
+      break
+  return z
+    
 
 def getPrefix(v):
   v = str(v)
@@ -200,10 +213,18 @@ def cmpl(node):
         quit("Unknown variable <" + val +">!")
       asm("movl " + g + ", %ecx")
 
-    elif len(val) >= 2 and val[0] == "&" and is_valid_variable_name(val[1:]):
+    elif len(val) >= 2 and val[0] == "@" and is_valid_variable_name(val[1:]):
       x = val[1:]
       if x in varias:
         asm("leal " + varias[x] + ", %ecx")
+      else:
+        quit("Unknown variable <" + str(x) + ">!")
+    
+    elif len(val) >= 2 and val[0] == "$" and is_valid_variable_name(val[1:]):
+      x = val[1:]
+      if x in varias:
+        asm("movl " + varias[x] + ", %esi")
+        asm("movl (%esi), %ecx")
       else:
         quit("Unknown variable <" + str(x) + ">!")
 
@@ -219,54 +240,78 @@ def cmpl(node):
         mov("eax", "ecx")
     else:
       asm("movl $" + val + ", %ecx")
+      return val
 
 
 
   elif node.type == "add":
     asm("xorl %edx, %edx")
-    cmpl(node.right)
+    x = cmpl(node.right)
     push("ecx")
-    cmpl(node.left)
-    pop("edx")
-    add("edx", "ecx")
+    y = cmpl(node.left)
+    if x != None and y != None:
+      mov(str(int(x) + int(y)), "ecx")
+      return str(int(x) + int(y))
+    else:
+      pop("edx")
+      add("edx", "ecx")
 
   elif node.type == "minus":
     asm("xorl %edx, %edx")
-    cmpl(node.right)
+    x = cmpl(node.right)
     push("ecx")
-    cmpl(node.left)
-    pop("edx")
-    sub("edx", "ecx")
+    y = cmpl(node.left)
+    if x != None and y != None:
+      mov(str(int(x) - int(y)), "ecx")
+      return str(int(x) - int(y))
+    else:
+      pop("edx")
+      sub("edx", "ecx")
+
+    
   
   elif node.type == "mul":
     asm("xorl %edx, %edx")
-    cmpl(node.right)
+    x = cmpl(node.right)
     push("ecx")
-    cmpl(node.left)
-    pop("edx")
-    mul("edx", "ecx")
+    y = cmpl(node.left)
+    if x != None and y != None:
+      mov(str(int(x) * int(y)), "ecx")
+      return str(int(x) * int(y))
+    else:
+      pop("edx")
+      mul("edx", "ecx")
+
   
   elif node.type == "div":
     #push("eax")
-    cmpl(node.left)
+    x = cmpl(node.left)
     push("ecx")
-    cmpl(node.right)
-    pop("eax")
-    asm("xorl %edx, %edx")
-    div("eax", "ecx")
-    mov("eax", "ecx")
+    y = cmpl(node.right)
+    if x != None and y != None:
+      mov(str(divver(x, y)), "ecx")
+      return str(divver(x, y))
+    else:
+      pop("eax")
+      asm("xorl %edx, %edx")
+      div("eax", "ecx")
+      mov("eax", "ecx")
     #pop("eax")
 
   elif node.type == "mod":
     #push("eax")
-    cmpl(node.left)
+    y = cmpl(node.left)
     push("ecx")
-    cmpl(node.right)
-    pop("eax")
-    asm("xorl %edx, %edx")
-    div("eax", "ecx")
-    mov("edx", "ecx")
-    #pop("eax")
+    x = cmpl(node.right)
+    if x != None and y != None:
+      mov(str(int(x) % int(y)), "ecx")
+      return str(int(x) % int(y))
+    else:
+      pop("eax")
+      asm("xorl %edx, %edx")
+      div("eax", "ecx")
+      mov("edx", "ecx")
+      #pop("eax")
 
   
 

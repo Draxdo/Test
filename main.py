@@ -2,11 +2,12 @@ import src.lex
 import src.parse
 import src.eval
 import src.tools
+import src.optimize
 import src.pre
 def main(file, n=None):
 
   import os
-  debug = True
+  debug = False
 
   l = src.tools.readSembleFile(file)
 
@@ -23,6 +24,8 @@ def main(file, n=None):
     fw.write(str(v).replace("[", "[\n").replace("]", "]\n"))
 
   src.eval.cmpf(v, "semble.asm")
+  
+  src.optimize.optimize("semble.asm")
 
   os.system("as --32 semble.asm -o semble.o")
   if n != None:

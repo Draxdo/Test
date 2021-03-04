@@ -12,11 +12,15 @@ With libc built-in don't worry about losing all that precious knowledge you have
 
 #### Variable declaration:
 
-```rustllvmlite tutorial
+```rust
 fn main => {
   let x = 6;
   let y = "Hello World!";
   let z = 'a';
+  let a = true;
+  let b = 0x0f;
+  let c = @x;
+  let d = $c;
 }
 ```
 
@@ -25,8 +29,11 @@ fn main => {
 ```rust
 fn name => {
   // code
+  let y = name();
 }
 ```
+
+#### Pointers
 
 
 
