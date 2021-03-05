@@ -27,13 +27,19 @@ class Expression:
 #            | string
 #            | funccall
 #            | ampoint  
+#            | ptr
+#            | bool
+#            | hex
 
 def checkExpr(tokens):
+  #print(tokens)
   if len(tokens) == 1:
     if tokens[0].getTokenType() == "TT_INTEGER" or tokens[0].getTokenType() == "TT_HEX":
       return True, "implicit_int", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_AMPOINT":
       return True, "ampoint", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_BYTES":
+      return True, "bytes", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_PTR":
       return True, "PTR", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_STRING":
@@ -43,6 +49,7 @@ def checkExpr(tokens):
     elif tokens[0].getTokenType() == "TT_IDENTIFIER":
       return True, "identifier", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_FUNCCALL":
+      #print("hit")
       return True, "funccall", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_KEYWORD" and tokens[0].getTokenValue() in ["true", "false"]:
       return True, "boolean", Node("int_val", right=tokens[0].getTokenValue())
@@ -120,7 +127,9 @@ def checkExpr(tokens):
       if x and x1:
         return True, "mod", Node("mod", left=z1, right=z)
       else:
-        return False
+        return False, None, None
+    else:
+      quit("Unknown expr!")
 
 def checkLogicalExpr(exprs):
   #print(exprs)
@@ -192,7 +201,9 @@ def parse(tokens):
     #print(tmpstream)
     if tmpid == "fdef":
       if token.getTokenType() == "TT_RBRACE":
-        appendEndLeft(AST, Node("fdef1", right=fparse(tmpstream, fname)))
+        b, fn, args = checkFuncCall(fname.getTokenValue())
+
+        appendEndLeft(AST, Node("fdef1", right=Node(type="finfo", right=args, left=fparse(tmpstream, fname))))
         tmpid = ""
         tmpstream = []
         tokstream = []
@@ -203,7 +214,7 @@ def parse(tokens):
     else:
       tokstream.append(token)
     if len(tokstream) == 5 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "fn":
-      if tokstream[1].getTokenType() == "TT_IDENTIFIER":
+      if tokstream[1].getTokenType() == "TT_FUNCCALL":
         fname = tokstream[1]
         if tokstream[2].getTokenType() == "TT_EQUALS":
           if tokstream[3].getTokenType() == "TT_GRTHAN":
@@ -247,24 +258,30 @@ def fparse(tokens, funcname):
       #global statesParsed
 
       statesParsed = 0
+      depth = 0
       
       for statement in statements[idx+1:]:
         statesParsed += 1
         if len(statement) == 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "endif":
           if depth == 0:
+            #print("hit2")
             break
           else:
+            tmpis.append(statement)
             depth -= 1
         elif len(statement) >= 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "if":
+          #print("hit")
+          tmpis.append(statement)
           depth += 1
         else:
           tmpis.append(statement)
-      
-      tmpf = fparse(tmpis[0], "tmpf")
 
-      stuff = tmpf.left
+      for i in tmpis:
+        tmpf = fparse(i, "tmpf")
 
-      c.right.left = stuff
+        stuff = tmpf.left
+
+        appendEndLeft(c.right, stuff)
 
       skip += statesParsed
 

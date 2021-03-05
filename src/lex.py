@@ -12,7 +12,54 @@ class Token:
     return '[Token: TokenType: {} TokenValue: {}]'.format(self.T_TYPE, self.value)
   def __repr__(self):
     return '[Token: TokenType: {} TokenValue: {}]'.format(self.T_TYPE, self.value)
-    
+
+def checkFuncCall(s):
+  fn = ""
+  args = ""
+  idx = 0
+  for i in s:
+    idx += 1
+    if i == "(":
+      break
+    else:
+      fn += i
+  if is_valid_variable_name(fn):
+    args = s[idx:-1]
+    args = args.replace(", ", ",").replace(" , ", ",").replace(" ,", ",").replace("  ,  ", ",").replace(",  ", ",").replace("  ,", ",")
+    tmpid = 0
+    tmpi = ""
+    tmp = ""
+    new = []
+    for i in args:
+      if i == "(" and tmpi == "":
+        tmp += i
+        tmpid += 1
+      elif i == ")" and tmpi == "":
+        tmp += i
+        tmpid -= 1
+      elif i == "\"" and tmpi == "":
+        tmp += i
+        tmpi = "quote"
+      elif i == "\"" and tmpi == "quote":
+        tmp += i
+        tmpi = ""
+      elif i == "'" and tmpi == "":
+        tmp += i
+        tmpi = "char"
+      elif i == "'" and tmpi == "char":
+        tmp += i
+        tmpi = ""
+      elif tmpid == 0 and i == "," and tmpi == "":
+        new.append(tmp)
+        tmp = ""
+      else:
+        tmp += i
+    new.append(tmp)
+    #print(new)
+    return True, fn, new
+  else:
+    return False, None, None
+     
 
 TT_PLUS = "TT_PLUS"
 TT_EQUALS = "TT_EQUALS"
@@ -32,8 +79,8 @@ TT_AMPOINT = "TT_AMPOINT"
 TT_PTR = "TT_PTR"
 TT_FUNCCALL = "TT_FUNCCALL"
 TT_DEQUAL = "TT_DEQUAL"
-TT_COMMA = "TT_COMMA"
 TT_MUL = "TT_MUL"
+TT_BYTES = "TT_BYTES"
 TT_DIV = "TT_DIV"
 TT_MOD = "TT_MOD"
 TT_CHAR = "TT_CHAR"
@@ -56,7 +103,7 @@ KEYWORDS = {
   "ENDIF": "endif",
   "TRUE": "true",
   "FALSE": "false",
-  "CONST": "const"
+  "CONST": "const",
 }
 
 def is_valid_variable_name(name):
@@ -72,107 +119,125 @@ def lex(s):
     #print(list(tmp))
     #print(tmpid)
 
-    if i == "\"" and tmpid != "quote" and tmpid != "chr":
+    #print(tmpid)
+
+    if i == "\"" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tmpid = "quote"
       tmp2 += i
     
-    elif i == "\"" and tmpid == "quote" and tmpid != "chr":
+    elif i == "\"" and tmpid == "quote" and tmpid != "chr" and tmpid != "paren":
       tmpid = ""
       tmp2 += i
 
-    elif i == "'" and tmpid != "chr":
+    elif i == "(" and tmpid != "quote" and tmpid != "chr":
+      #print("HEEHEJHE")
+      tmpid = "paren"
+      tmp2 += i
+    
+    elif i == ")" and tmpid == "paren" and tmpid != "chr" and tmpid != "quote":
+      #print("hit2")
+      tmpid = ""
+      tmp2 += i
+
+    elif i == "'" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren":
       tmpid = "chr"
       tmp2 += i
     
-    elif i == "'" and tmpid == "chr":
+    elif i == "'" and tmpid == "chr" and tmpid != "quote" and tmpid != "paren":
       tmpid = ""
       tmp2 += i
     
-    elif i == " " and tmpid != "quote" and tmpid != "chr":
-     # print("heyo")
+    elif i == " " and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+      #print(tmpid)
       tmp = tmp2
       tmp2 = ""
     
-    elif i == "\n" and tmpid != "quote" and tmpid != "chr":
+    elif i == "\n" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
      # print("hey")
       tmp = tmp2
       tmp2 = ""
       
-    elif i == "+" and tmpid != "quote" and tmpid != "chr":
+    elif i == "+" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_PLUS))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "&" and tmpid != "quote" and tmpid != "chr":
+    elif i == "&" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_AMP))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "%" and tmpid != "quote" and tmpid != "chr":
+    elif i == "%" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_MOD))
       tmpid = ""
       tmp2 = ""
-    
-    elif i == "," and tmpid != "quote" and tmpid != "chr":
-      tokens.append(Token(TT_COMMA))
-      tmpid = ""
-      tmp2 = ""
       
-    elif i == "-" and tmpid != "quote" and tmpid != "chr":
+    elif i == "-" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_MINUS))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "*" and tmpid != "quote" and tmpid != "chr":
+    elif i == "*" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_MUL))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "/" and tmpid != "quote" and tmpid != "chr":
+    elif i == "/" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_DIV))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "{" and tmpid != "quote" and tmpid != "chr":
+    elif i == "{" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_LBRACE))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "}" and tmpid != "quote" and tmpid != "chr":
+    elif i == "}" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_RBRACE))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "=" and tmpid != "quote" and tmpid != "chr":
+    elif i == "=" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_EQUALS))
       tmpid = ""
       tmp2 = ""
     
-    elif i == "!" and tmpid != "quote" and tmpid != "chr":
+    elif i == "!" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_DNEQUAL))
       tmpid = ""
       tmp2 = ""
 
-    elif i == ">" and tmpid != "quote" and tmpid != "chr":
+    elif i == ">" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_GRTHAN))
       tmpid = ""
       tmp2 = ""
     
-    elif i == "<" and tmpid != "quote" and tmpid != "chr":
+    elif i == "<" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       tokens.append(Token(TT_LTHAN))
       tmpid = ""
       tmp2 = ""
       
-    elif i == ";" and tmpid != "quote" and tmpid != "chr":
+    elif i == ";" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
       #print("hi")
       tmp = tmp2
       tmpid = "semi"
       
     else:
       tmp2 += i
+
+    if len(tmp) >= 4 and re.match(r"^(i8:)\d+$", tmp):
+          
+      tokens.append(Token(TT_BYTES, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
       
-    if re.match(r"^(0[xX])?[A-Fa-f0-9]+$", tmp):
-      tokens.append(Token(TT_HEX, tmp))
+
+    elif re.match(r"^[0-9]+$", tmp):
+      tokens.append(Token(TT_INTEGER, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
@@ -180,8 +245,8 @@ def lex(s):
       tmpid = ""
       tmp = ""
 
-    elif re.match(r"^[0-9]+$", tmp):
-      tokens.append(Token(TT_INTEGER, tmp))
+    elif re.match(r"^(0[xX])[A-Fa-f0-9]+$", tmp):
+      tokens.append(Token(TT_HEX, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
@@ -234,18 +299,17 @@ def lex(s):
       tmpid = ""
       tmp = ""
 
-    elif len(tmp) >= 2 and is_valid_variable_name(tmp.replace("(", "").replace(")", "")) and tmp[-1] + tmp[-2] == ")(":
-      tokens.append(Token(TT_FUNCCALL, tmp))
+    elif is_valid_variable_name(tmp):
+      tokens.append(Token(TT_IDENTIFIER, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
       tmp = ""
-      
-      
-    elif is_valid_variable_name(tmp):
-      tokens.append(Token(TT_IDENTIFIER, tmp))
+
+    elif len(tmp) >= 3 and checkFuncCall(tmp)[0]:
+      tokens.append(Token(TT_FUNCCALL, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""

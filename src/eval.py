@@ -38,6 +38,14 @@ strings = {
   
 }
 
+funcargs = {
+
+}
+
+bss = {
+
+}
+
 n = 0
 
 def asm(s):
@@ -93,7 +101,7 @@ def div(s, v):
   asm("idiv %edi")
 
 def cmpl(node):
-  global n, currentFunc, funcs, varias
+  global n, currentFunc, funcs, varias, funcnums, funcargs
   #print("Entered cmpl()")
   #print("node.left: {}".format(node.left))
   #print(node.type)
@@ -101,15 +109,31 @@ def cmpl(node):
   
   if currentFunc == None:
     if node != None and node.left != None and node.left.type == "fdef1":
-      fname = node.left.right.right.getTokenValue()
+      #print(node.left.right.left.right)
+      fname = node.left.right.left.right.getTokenValue()
+      args = node.left.right.right
       if fname in funcs.keys():
         quit("Cannot redefine function <" + str(fname) + ">!")
       else:
+        fname = checkFuncCall(fname)[1]
         currentFunc = fname
         funcs[fname] =[]
+        funcargs[fname] = []
         funcnums[fname] = 0
         varias = {}
-        cmpl(node.left.right)
+        idx = 4
+        for arg in args:
+          idx += 4
+          if arg == "":
+            break
+          elif is_valid_variable_name(arg):
+            varias[arg] = str(idx) + "(%ebp)"
+            
+            funcargs[currentFunc].append(args)
+
+          else:
+            quit("Invalid argument <" + arg + ">!")
+        cmpl(node.left.right.left)
         currentFunc = None
         cmpl(node.left)
     elif node == None or node.left == None:
@@ -195,6 +219,12 @@ def cmpl(node):
         asm("movl $1, %ecx")
       else:
         asm("movl $0, %ecx")
+
+    elif re.match(r"^(i8:)\d+$", val):
+      v = val[3:]
+      bss["BSSLOCK" + str(n)] = str(v)
+      asm("movl $" + "BSSLOCK" + str(n) + ", %ecx")
+      n += 1
         
     elif re.match(r'^["][^\n]*["]$', val):
       if val not in strings.keys():
@@ -228,16 +258,23 @@ def cmpl(node):
       else:
         quit("Unknown variable <" + str(x) + ">!")
 
-    elif is_valid_variable_name(val.replace("(", "").replace(")", "")) and val[-1] + val[-2] == ")(":
-      print(
-        'hit'
-      )
-      funcname = val.replace("(", "").replace(")", "")
-      if funcname not in funcs.keys():
-        quit("Unknown function <" + str(funcname) + ">!")
-      else:
-        asm("call " + funcname)
-        mov("eax", "ecx")
+    elif checkFuncCall(val)[0]:
+      b, fn, args = checkFuncCall(val)
+      #print(args)
+      #print(args)
+      for arg in reversed(args):
+        if arg == "":
+          break
+        else:
+          #print(arg)
+          bo, ty, node = checkExpr(lex(arg + "\n"))
+          if bo:
+            cmpl(node)
+            push("ecx")
+          else:
+            quit("Invalid expression <" + arg + ">!")
+      asm("call " + fn)
+      mov("eax", "ecx")
     else:
       asm("movl $" + val + ", %ecx")
       return val
@@ -317,7 +354,7 @@ def cmpl(node):
 
 
 def cmpf(ast, f):
-  global funcnums, funcs, currentFunc, tmpid, valueStack, ints, varias, data, strings, n
+  global funcnums, funcs, currentFunc, tmpid, valueStack, ints, varias, data, strings, n, bss
   funcnums = {
     
   }
@@ -351,6 +388,9 @@ def cmpf(ast, f):
       fw.write("\n" + d + ":\n")
       di = data[d]
       fw.write("\t" + di + "\n")
+    fw.write("\t.section .bss\n")
+    for b in bss:
+      fw.write("\n.lcomm " + b + ", " + str(bss[b]) + "\n")
     fw.write("\t.section .text\n")
     fw.write("\t.globl _start\n")
     for func in funcs:

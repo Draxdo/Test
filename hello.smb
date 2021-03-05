@@ -1,7 +1,12 @@
-fn main => {
-  let x = 15 / 3;
-  asm "movl $6, ~~x";
-  let y = @x;
+#program main
+#include stdlib.smb
+
+fn main() => {
   
-  return $y;
+  let chunks = i8:65;
+  let x = printf("Hello. Please enter your name >>> ");
+  x = scanf("%s", chunks);
+  x = printf("You entered: %s\n", chunks);
+  
+  return 0;
 }

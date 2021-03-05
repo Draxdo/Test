@@ -30,9 +30,10 @@ def main(file, n=None):
   os.system("as --32 semble.asm -o semble.o")
   if n != None:
     fname = n
-  os.system("ld -m elf_i386 semble.o -o " + fname)
+  os.system("ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o " + fname + " semble.o -lc")
   if not debug:
     os.system("rm semble.o parseout.txt lexout.txt")
 
 if __name__ == '__main__':
+  #print(src.lex.checkFuncCall("hello(helo,hello, h)"))
   main("hello.smb")

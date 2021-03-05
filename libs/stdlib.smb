@@ -1,7 +1,5 @@
-fn exit_noerr => {
-  quit 0;
-}
-
-fn exit_err => {
-  quit 1;
+fn printl(a) => {
+  let x = printf(a);
+  let y = printf("\n");
+  return x + y;
 }
