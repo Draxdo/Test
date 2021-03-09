@@ -47,6 +47,7 @@ bss = {
 }
 
 n = 0
+nextAdd = 0
 
 def asm(s):
   funcs[currentFunc].append(s)
@@ -94,6 +95,13 @@ def push(s):
 def pop(s):
   asm("popl " + getPrefix(s) + str(s))
 
+def rndz(i):
+  i = i - 1
+  if i < 0:
+    return 0
+  else:
+    return i
+
 def div(s, v):
   asm("xorl %edx, %edx")
   mov(s, "eax")
@@ -101,7 +109,7 @@ def div(s, v):
   asm("idiv %edi")
 
 def cmpl(node):
-  global n, currentFunc, funcs, varias, funcnums, funcargs
+  global n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd
   #print("Entered cmpl()")
   #print("node.left: {}".format(node.left))
   #print(node.type)
@@ -173,7 +181,13 @@ def cmpl(node):
       ints.append(node.left.left.right)
       funcnums[currentFunc] += 4
       varias[node.left.left.right] = "-" + str(funcnums[currentFunc]) + "(%ebp)"
-      asm("movl %ecx, " + varias[node.left.left.right])
+      v = False
+      if nextAdd > 0 and currentFunc != None:
+        funcnums[currentFunc] += nextAdd
+        nextAdd = 0
+        v = True
+      if not v:
+        asm("movl %ecx, " + varias[node.left.left.right])
       cmpl(node.left.left)
       return None
     else:
@@ -189,10 +203,20 @@ def cmpl(node):
     return None
   
   elif node.left != None and node.left.type == "set_mov_equals":
-    #print("hello")
+    #print(node.left.left.right)
     if node.left.left.right in varias.keys():
       cmpl(node.left.right)
       mov("ecx", varias[node.left.left.right])
+      cmpl(node.left.left)
+      return None
+    elif checkIndexRef(node.left.left.right)[0]:
+      #print("je")
+      b, fn, index = checkIndexRef(node.left.left.right)
+      val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
+      ab = int(val) + (rndz(int(index)) * 4)
+      #print(node.left.right)
+      cmpl(node.left.right)
+      asm("movl %ecx, -" + str(ab) + "(%ebp)")
       cmpl(node.left.left)
       return None
     else:
@@ -213,12 +237,79 @@ def cmpl(node):
   elif node.left == None and node.type == "int_val":
     val = node.right
     g = None
+    #print(val)
     
     if val in ["true", "false"]:
       if val == "true":
         asm("movl $1, %ecx")
       else:
         asm("movl $0, %ecx")
+
+    elif checkIndexRef(val)[0]:
+      b, fn, index = checkIndexRef(val)
+      print(varias[fn])
+      val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
+      ab = int(val) + (rndz(int(index)) * 4)
+      print(val)
+      print(ab)
+      asm("movl -" + str(ab) + "(%ebp), %ecx")
+
+    elif re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val):
+      x = re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val)
+      length = x.group(1)
+      values = x.group(2) + x.group(3)
+      args = values.replace(", ", ",").replace(" , ", ",").replace(" ,", ",").replace("  ,  ", ",").replace(",  ", ",").replace("  ,", ",")
+      tmpid = 0
+      tmpi = ""
+      tmp = ""
+      new = []
+      for i in args:
+        if i == "(" and tmpi == "":
+          tmp += i
+          tmpid += 1
+        elif i == ")" and tmpi == "":
+          tmp += i
+          tmpid -= 1
+        elif i == "\"" and tmpi == "":
+          tmp += i
+          tmpi = "quote"
+        elif i == "\"" and tmpi == "quote":
+          tmp += i
+          tmpi = ""
+        elif i == "'" and tmpi == "":
+          tmp += i
+          tmpi = "char"
+        elif i == "'" and tmpi == "char":
+          tmp += i
+          tmpi = ""
+        elif tmpid == 0 and i == "," and tmpi == "":
+          new.append(tmp)
+          tmp = ""
+        else:
+          tmp += i
+      new.append(tmp)
+      #print(new)
+      fnc = funcnums[currentFunc] + 4
+      idx = 0
+      #print(new)
+      for arg in new:
+        #print(lex(arg + " "))
+        #print(list(arg + " "))
+        if arg != "":
+          b, ty, no = checkExpr(lex(arg + " "))
+          if not b:
+            quit("Invalid expression '" + arg + "'!")
+          else:
+            cmpl(no)
+            print(no)
+            asm("movl %ecx, -" + str(fnc + (4 * idx)) + "(%ebp)")
+            idx += 1
+        else:
+          break
+      #asm("movl $0, %ecx")
+      nextAdd += (4 * int(length)) - 4
+
+
 
     elif re.match(r"^(i8:)\d+$", val):
       v = val[3:]

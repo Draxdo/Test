@@ -1,0 +1,34 @@
+[
+ Node: Type: global Left: [
+ Node: Type: fdef1 Left: None Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: quit_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: y ]
+ ]
+ Right: y ]
+ Right: [
+ Node: Type: int_val Left: None Right: x[
+0]
+ ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: [
+7]
+[
+'H', 'e', 'l', 'l', 'o', 0x0a, 0x00]
+ ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: main()]
+ ]
+ Right: [
+'']
+ ]
+ ]
+ Right: None ]

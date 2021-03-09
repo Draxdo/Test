@@ -13,6 +13,25 @@ class Token:
   def __repr__(self):
     return '[Token: TokenType: {} TokenValue: {}]'.format(self.T_TYPE, self.value)
 
+def checkIndexRef(s):
+  vn = ""
+  n = ""
+  idx = -1
+  for i in s:
+    idx += 1
+    if i == "[":
+      break
+    else:
+      vn += i
+  ns = s[idx:]
+  if re.match(r"^\[(\d+)\]$", ns):
+    x = re.match(r"^\[(\d+)\]$", ns)
+    v = x.group(1)
+    return True, vn, v
+
+  else:
+    return False, None, None
+
 def checkFuncCall(s):
   fn = ""
   args = ""
@@ -85,7 +104,9 @@ TT_DIV = "TT_DIV"
 TT_MOD = "TT_MOD"
 TT_CHAR = "TT_CHAR"
 TT_ASM = "TT_ASM"
+TT_ARR = "TT_ARR"
 TT_AMP = "TT_AMP"
+TT_INDEXREF = "TT_INDEXREF"
 
 def findKeyFromValue(dictionary, v):
   for key, val in dictionary.items():
@@ -121,109 +142,121 @@ def lex(s):
 
     #print(tmpid)
 
-    if i == "\"" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    if i == "\"" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tmpid = "quote"
       tmp2 += i
     
-    elif i == "\"" and tmpid == "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "\"" and tmpid == "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tmpid = ""
       tmp2 += i
 
-    elif i == "(" and tmpid != "quote" and tmpid != "chr":
+    elif i == "(" and tmpid != "quote" and tmpid != "chr" and tmpid != "brac":
       #print("HEEHEJHE")
       tmpid = "paren"
       tmp2 += i
     
-    elif i == ")" and tmpid == "paren" and tmpid != "chr" and tmpid != "quote":
+    elif i == ")" and tmpid == "paren" and tmpid != "chr" and tmpid != "quote" and tmpid != "brac":
       #print("hit2")
       tmpid = ""
       tmp2 += i
 
-    elif i == "'" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren":
+    elif i == "[" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+      #print("HEEHEJHE")
+      tmpid = "brac"
+      tmp2 += i
+    
+    elif i == "]" and tmpid == "brac" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren":
+      #print("hit2")
+      tmpid = ""
+      tmp2 += i
+
+    elif i == "'" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren" and tmpid != "brac":
       tmpid = "chr"
       tmp2 += i
     
-    elif i == "'" and tmpid == "chr" and tmpid != "quote" and tmpid != "paren":
+    elif i == "'" and tmpid == "chr" and tmpid != "quote" and tmpid != "paren" and tmpid != "brac":
       tmpid = ""
       tmp2 += i
     
-    elif i == " " and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == " " and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       #print(tmpid)
       tmp = tmp2
       tmp2 = ""
     
-    elif i == "\n" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "\n" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
      # print("hey")
       tmp = tmp2
       tmp2 = ""
       
-    elif i == "+" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "+" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_PLUS))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "&" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "&" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_AMP))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "%" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "%" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_MOD))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "-" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "-" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_MINUS))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "*" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "*" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_MUL))
       tmpid = ""
       tmp2 = ""
 
-    elif i == "/" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "/" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_DIV))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "{" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "{" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_LBRACE))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "}" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "}" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_RBRACE))
       tmpid = ""
       tmp2 = ""
       
-    elif i == "=" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "=" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_EQUALS))
       tmpid = ""
       tmp2 = ""
     
-    elif i == "!" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "!" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_DNEQUAL))
       tmpid = ""
       tmp2 = ""
 
-    elif i == ">" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == ">" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_GRTHAN))
       tmpid = ""
       tmp2 = ""
     
-    elif i == "<" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == "<" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_LTHAN))
       tmpid = ""
       tmp2 = ""
       
-    elif i == ";" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
+    elif i == ";" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       #print("hi")
       tmp = tmp2
       tmpid = "semi"
       
     else:
       tmp2 += i
+
+    #print(tmp)
 
     if len(tmp) >= 4 and re.match(r"^(i8:)\d+$", tmp):
           
@@ -234,7 +267,25 @@ def lex(s):
         tmp2 = ""
       tmpid = ""
       tmp = ""
+
+    elif re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", tmp):
+      #print("hello")
+      tokens.append(Token(TT_ARR, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
       
+    elif checkIndexRef(tmp)[0]:
+      tokens.append(Token(TT_INDEXREF, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
 
     elif re.match(r"^[0-9]+$", tmp):
       tokens.append(Token(TT_INTEGER, tmp))

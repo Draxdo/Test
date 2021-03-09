@@ -1,0 +1,46 @@
+[
+[
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: main()]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: x]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_ARR TokenValue: [
+7]
+[
+'H', 'e', 'l', 'l', 'o', 0x0a, 0x00]
+]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: y]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_INDEXREF TokenValue: x[
+0]
+]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: quit]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: y]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+]

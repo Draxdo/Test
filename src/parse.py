@@ -38,6 +38,10 @@ def checkExpr(tokens):
       return True, "implicit_int", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_AMPOINT":
       return True, "ampoint", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_INDEXREF":
+      return True, "indexref", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_ARR":
+      return True, "arr", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_BYTES":
       return True, "bytes", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_PTR":
@@ -338,7 +342,7 @@ def fparse(tokens, funcname):
         appendEndLeft(AST, x)
       else:
         quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
-    elif statement[0].getTokenType() == "TT_IDENTIFIER":
+    elif statement[0].getTokenType() == "TT_IDENTIFIER" or statement[0].getTokenType() == "TT_INDEXREF":
       name = statement[0].getTokenValue()
       if statement[1].getTokenType() == "TT_EQUALS":
         try:

@@ -1,19 +1,5 @@
 	.section .data
-
-strLOCK0:
-	.asciz "\n"
-
-strLOCK2:
-	.asciz "Hello. Please enter your name >>> "
-
-strLOCK3:
-	.asciz "%s"
-
-strLOCK4:
-	.asciz "You entered: %s\n"
 	.section .bss
-
-.lcomm BSSLOCK1, 65
 	.section .text
 	.globl _start
 
@@ -23,66 +9,32 @@ _start:
 	movl $1, %eax
 	int $0x80
 
-	.type printl, @function
-printl:
-	pushl %ebp
-	movl %esp, %ebp
-
-	subl $8, %esp
-	movl 8(%ebp), %ecx
-	pushl %ecx
-	call printf
-	movl %eax, %ecx
-	movl %ecx, -4(%ebp)
-	movl $strLOCK0, %ecx
-	pushl %ecx
-	call printf
-	movl %eax, %ecx
-	movl %ecx, -8(%ebp)
-	xorl %edx, %edx
-	movl -8(%ebp), %ecx
-	pushl %ecx
-	movl -4(%ebp), %ecx
-	popl %edx
-	addl %edx, %ecx
-	movl %ecx, %eax
-	leave
-	ret
-	movl %ebp, %esp
-	popl %ebp
-	ret
-
 	.type main, @function
 main:
 	pushl %ebp
 	movl %esp, %ebp
 
-	subl $8, %esp
-	movl $BSSLOCK1, %ecx
+	subl $32, %esp
+	movl $'H', %ecx
 	movl %ecx, -4(%ebp)
-	movl $strLOCK2, %ecx
-	pushl %ecx
-	call printf
-	movl %eax, %ecx
+	movl $'e', %ecx
 	movl %ecx, -8(%ebp)
+	movl $'l', %ecx
+	movl %ecx, -12(%ebp)
+	movl $'l', %ecx
+	movl %ecx, -16(%ebp)
+	movl $'o', %ecx
+	movl %ecx, -20(%ebp)
+	movl $0x0a, %ecx
+	movl %ecx, -24(%ebp)
+	movl $0x00, %ecx
+	movl %ecx, -28(%ebp)
 	movl -4(%ebp), %ecx
-	pushl %ecx
-	movl $strLOCK3, %ecx
-	pushl %ecx
-	call scanf
-	movl %eax, %ecx
-	movl %ecx, -8(%ebp)
-	movl -4(%ebp), %ecx
-	pushl %ecx
-	movl $strLOCK4, %ecx
-	pushl %ecx
-	call printf
-	movl %eax, %ecx
-	movl %ecx, -8(%ebp)
-	movl $0, %ecx
-	movl %ecx, %eax
-	leave
-	ret
+	movl %ecx, -32(%ebp)
+	movl -32(%ebp), %ecx
+	movl %ecx, %ebx
+	movl $1, %eax
+	int $0x80
 	movl %ebp, %esp
 	popl %ebp
 	ret
