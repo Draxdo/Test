@@ -7,6 +7,8 @@ functionProlouge = [
   "\tmovl %esp, %ebp\n"
 ]
 
+breaker = []
+
 functionEpilouge = [
   "\tmovl %ebp, %esp\n",
   "\tpopl %ebp\n",
@@ -38,6 +40,10 @@ strings = {
   
 }
 
+structbeenptrs = {
+  
+}
+
 funcargs = {
 
 }
@@ -45,6 +51,24 @@ funcargs = {
 bss = {
 
 }
+
+fstructs = {
+
+}
+
+def checkStructDef(s):
+  return s.split(".")
+
+class Struct:
+  def __init__(self, name, variz, starting):
+    self.name = name
+    self.variz = variz
+    self.starting = starting
+  def getvalue(self, s):
+    if s in self.variz:
+      return str(self.variz.index(s) * 4) + "(" + self.starting + ")"
+    else:
+      return False
 
 n = 0
 nextAdd = 0
@@ -95,6 +119,8 @@ def push(s):
 def pop(s):
   asm("popl " + getPrefix(s) + str(s))
 
+structs = {}
+
 def rndz(i):
   i = i - 1
   if i < 0:
@@ -108,12 +134,34 @@ def div(s, v):
   mov(v, "edi")
   asm("idiv %edi")
 
+def divl(s, v):
+  asm("xorl %edx, %edx")
+  mov(s, "eax")
+  mov(v, "edi")
+  asm("div %edi")
+
+def seval(name, node):
+  v = []
+  if node.left != None:
+    if node.left.right == None:
+      x = seval(name, node.left)
+      v = v + x
+      return v
+    v.append(node.left.right)
+    x = seval(name, node.left)
+    v = v + x
+  return v
+
 def cmpl(node):
-  global n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd
+  global n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs
+  #print(fstructs)
+  #print(varias)
   #print("Entered cmpl()")
   #print("node.left: {}".format(node.left))
   #print(node.type)
   
+  if node == None:
+    return None
   
   if currentFunc == None:
     if node != None and node.left != None and node.left.type == "fdef1":
@@ -128,6 +176,7 @@ def cmpl(node):
         funcs[fname] =[]
         funcargs[fname] = []
         funcnums[fname] = 0
+        fstructs = {}
         varias = {}
         idx = 4
         for arg in args:
@@ -144,11 +193,122 @@ def cmpl(node):
         cmpl(node.left.right.left)
         currentFunc = None
         cmpl(node.left)
+    elif node != None and node.left != None and node.left.type == "sdef":
+      # struct
+      sname = node.left.right.right
+      v = seval(sname, node.left.right)
+      if v == []:
+        print("Semble: Warning: Empty struct '{}', due to this being a waste of memory, it will not be generated.".format(sname))
+        cmpl(node.left)
+        return None
+      else:
+        structs[sname] = v
+
+        cmpl(node.left)
+        return None
+
     elif node == None or node.left == None:
       pass
 
+  elif node.left != None and node.left.type == "srdef":
+    #print("he")
+    sname = node.left.right[0]
+    vname = node.left.right[1]
+    stuffs = node.left.right[2]
+    # you're to have a place in memory
+    idx = -1
+    first = "-" + str(funcnums[currentFunc] + 4) + "(%ebp)"
+    for i in structs[sname]:
+      idx += 1
+      funcnums[currentFunc] += 4
+      if stuffs[idx] == None:
+        asm("movl $0 %ecx")
+      else:
+        cmpl(checkExpr(stuffs[idx])[2])
+        if nextAdd > 0 and currentFunc != None:
+          funcnums[currentFunc] += nextAdd
+          nextAdd = 0
+          v = True
+      if sname + "__" + i in varias:
+        quit("Predefined {}!")
+      varias[vname + "__" + i] = "-" + str(funcnums[currentFunc]) + "(%ebp)"
+        
+      asm("movl %ecx, " + varias[vname + "__" + i])
+    varias[vname] = first
+    sva = Struct(sname, structs[sname], first)
+    fstructs[vname] = sva
+    cmpl(node.left)
+
+  elif node.left != None and node.left.type == "asstruct":
+    if node.left.right[0] in varias:
+      x = Struct(node.left.right[0], structs[node.left.right[1]], varias[node.left.right[0]])
+      fstructs[node.left.right[0]] = x
+      cmpl(node.left)
+      return None
+    else:
+      quit("Value <{}> not a variable!".format(node.left.right[1]))
+
+  elif node.left != None and node.left.type == "break":
+    br = breaker[-1]
+    #print(br)
+    asm("jmp " + br)
+    cmpl(node.left)
+    return None
+
+  elif node.left != None and node.left.type == "funccall":
+    val = node.left.right
+    b, fn, args = checkFuncCall(val)
+    for arg in reversed(args):
+      if arg == "":
+        break
+      else:
+        bo, ty, no = checkExpr(lex(arg + "\n"))
+        if bo:
+          cmpl(no)
+          push("ecx")
+        else:
+          quit("Invalid expression <" + arg + ">!")
+    asm("call " + fn)
+    pop("ebx")
+    cmpl(node.left)
+    return None
+  
+  elif node.left != None and node.left.type == "forloop":
+    fordetails = node.left.right
+    vname = fordetails.right[0]
+    fromv = fordetails.right[1]
+    tov = fordetails.right[2]
+    nexts = Node("nonode", left=fordetails.left)
+    if vname not in varias:
+      cmpl(fromv)
+      funcnums[currentFunc] += 4
+      varias[vname] = "-" + str(funcnums[currentFunc]) + "(%ebp)"
+      asm("movl %ecx, " + varias[vname])
+      cmpl(tov)
+      mov("ecx", "esi")
+      n += 1
+      mov(varias[vname], "ebx")
+      cmp("esi", "ebx")
+      nname = "LF" + str(n)
+      nname2 = "LD" + str(n)
+      asm("jg ." + nname)
+      asm("." + nname2 + ":")
+      breaker.append("." + nname)
+      cmpl(nexts)
+      breaker.pop(-1)
+      asm("incl " + varias[vname])
+      mov(varias[vname], "ebx")
+      cmp("esi", "ebx")
+      asm("jle ." + nname2)
+      asm("." + nname + ":")
+      #breaker = "." + nname
+      cmpl(node.left)
+      return None;
+    else:
+      quit("Prenamed variable <{}>!".format(vname))
   elif node.left != None and node.left.type == "if_statement":
     things = node.left.right.right
+    #print("\n\n#################\n\n" + str(node.left) + "\n\n")
     #print(node.left.left)
     ins = Node("nonode", left=node.left.right.left)
     cmpl(things[0])
@@ -162,17 +322,72 @@ def cmpl(node):
     elif things[2] == "TT_DNEQUAL":
       prefix = "e"
     elif things[2] == "TT_GRTHAN":
-      prefix = "l"
+      prefix = "le"
     elif things[2] == "TT_LTHAN":
-      prefix = "g"
+      prefix = "ge"
     else:
       quit("Unknown operator type <" + str(things[2]) + ">!")
     name = prefix + str(n)
     n += 1
     asm("j" + prefix + " ." + name)
     cmpl(ins)
+    #print(ins)
     asm("." + name + ":")
     cmpl(node.left)
+
+  elif node.left != None and node.left.type == "while_loop":
+    things = node.left.right.right
+    #print("\n\n#################\n\n" + str(node.left) + "\n\n")
+    #print(node.left.left)
+    ins = Node("nonode", left=node.left.right.left)
+    cmpl(things[0])
+    push("ecx")
+    cmpl(things[1])
+    pop("edx")
+    cmp("ecx", "edx")
+    prefix = None
+    if things[2] == "TT_EQUALS":
+      prefix = "ne"
+    elif things[2] == "TT_DNEQUAL":
+      prefix = "e"
+    elif things[2] == "TT_GRTHAN":
+      prefix = "le"
+    elif things[2] == "TT_LTHAN":
+      prefix = "ge"
+    else:
+      quit("Unknown operator type <" + str(things[2]) + ">!")
+    name = prefix + str(n)
+    n += 1
+    asm("j" + prefix + " ." + name)
+    abc = "LFB" + str(n)
+    asm("." + abc + ":")
+    breaker.append("." + name)
+    cmpl(ins)
+    breaker.pop(-1)
+    
+    cmpl(things[0])
+    push("ecx")
+    cmpl(things[1])
+    pop("edx")
+    cmp("ecx", "edx")
+    prefix = None
+    if things[2] == "TT_EQUALS":
+      prefix = "e"
+    elif things[2] == "TT_DNEQUAL":
+      prefix = "ne"
+    elif things[2] == "TT_GRTHAN":
+      prefix = "g"
+    elif things[2] == "TT_LTHAN":
+      prefix = "l"
+    else:
+      quit("Unknown operator type <" + str(things[2]) + ">!")
+    asm("j" + prefix + " ." + abc)
+
+    #print(ins)
+    asm("." + name + ":")
+    #breaker = "." + name
+    cmpl(node.left)
+    return None
     
   elif node.left != None and node.left.type == "int_dec":
     #print("Entered cmpl.int_dec()")
@@ -206,17 +421,29 @@ def cmpl(node):
     #print(node.left.left.right)
     if node.left.left.right in varias.keys():
       cmpl(node.left.right)
-      mov("ecx", varias[node.left.left.right])
+      asm("movl %ecx, " + varias[node.left.left.right])
       cmpl(node.left.left)
       return None
     elif checkIndexRef(node.left.left.right)[0]:
-      #print("je")
-      b, fn, index = checkIndexRef(node.left.left.right)
+      val = node.left.left.right
+      b, fn, index = checkIndexRef(val)
+      print(varias[fn])
       val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
-      ab = int(val) + (rndz(int(index)) * 4)
-      #print(node.left.right)
+      ab = int(val)
+      cmpl(checkExpr(lex(index + "\n"))[2])
+      mul(4, "ecx")
+      asm("cmpl $0, %ecx")
+      asm("jz .sksb" + str(n))
+      asm("subl $1, %ecx")
+      asm(".sksb" + str(n) + ":")
+      n += 1
+      add(str(ab), "ecx")
+      print(val)
+      print(ab)
+      asm("movl %ebp, %edi")
+      sub("ecx", "edi")
       cmpl(node.left.right)
-      asm("movl %ecx, -" + str(ab) + "(%ebp)")
+      asm("movl %ecx, (%ebp)")
       cmpl(node.left.left)
       return None
     else:
@@ -245,20 +472,42 @@ def cmpl(node):
       else:
         asm("movl $0, %ecx")
 
+    elif is_valid_struct_def(val):
+      x = checkStructDef(val)
+      if x[0] in fstructs:
+        fstructs[x[0]].getvalue(x[1])
+        asm("leal " + fstructs[x[0]].starting + ", %ebx")
+        if x[1] in fstructs[x[0]].variz:
+          asm("movl " + str(fstructs[x[0]].variz.index(x[1]) * 4) + "(%ebx), %ecx")
+        else:
+          quit("Semble: Error: Data structure '{}' has no type '{}'!".format(x[0], x[1]))
+      else:
+        quit("Unknown type '{}'!".format(x[0]))
+
     elif checkIndexRef(val)[0]:
       b, fn, index = checkIndexRef(val)
       print(varias[fn])
       val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
-      ab = int(val) + (rndz(int(index)) * 4)
+      ab = int(val)
+      cmpl(checkExpr(lex(index + "\n"))[2])
+      mul(4, "ecx")
+      asm("cmpl $0, %ecx")
+      asm("je .sksb" + str(n))
+      asm("subl $1, %ecx")
+      asm(".sksb" + str(n) + ":")
+      n += 1
+      add(str(ab), "ecx")
       print(val)
       print(ab)
-      asm("movl -" + str(ab) + "(%ebp), %ecx")
+      asm("movl %ebp, %edi")
+      sub("ecx", "edi")
+      asm("movl (%ebp), %ecx")
 
     elif re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val):
       x = re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val)
       length = x.group(1)
       values = x.group(2) + x.group(3)
-      args = values.replace(", ", ",").replace(" , ", ",").replace(" ,", ",").replace("  ,  ", ",").replace(",  ", ",").replace("  ,", ",")
+      args = parseFuncCall(values)
       tmpid = 0
       tmpi = ""
       tmp = ""
@@ -366,6 +615,7 @@ def cmpl(node):
             quit("Invalid expression <" + arg + ">!")
       asm("call " + fn)
       mov("eax", "ecx")
+      pop("ebx")
     else:
       asm("movl $" + val + ", %ecx")
       return val
@@ -373,42 +623,30 @@ def cmpl(node):
 
 
   elif node.type == "add":
-    asm("xorl %edx, %edx")
+    #asm("xorl %edx, %edx")
     x = cmpl(node.right)
     push("ecx")
     y = cmpl(node.left)
-    if x != None and y != None:
-      mov(str(int(x) + int(y)), "ecx")
-      return str(int(x) + int(y))
-    else:
-      pop("edx")
-      add("edx", "ecx")
+    pop("edx")
+    add("edx", "ecx")
 
   elif node.type == "minus":
-    asm("xorl %edx, %edx")
+    #asm("xorl %edx, %edx")
     x = cmpl(node.right)
     push("ecx")
     y = cmpl(node.left)
-    if x != None and y != None:
-      mov(str(int(x) - int(y)), "ecx")
-      return str(int(x) - int(y))
-    else:
-      pop("edx")
-      sub("edx", "ecx")
+    pop("edx")
+    sub("edx", "ecx")
 
     
   
   elif node.type == "mul":
-    asm("xorl %edx, %edx")
+    #asm("xorl %edx, %edx")
     x = cmpl(node.right)
     push("ecx")
     y = cmpl(node.left)
-    if x != None and y != None:
-      mov(str(int(x) * int(y)), "ecx")
-      return str(int(x) * int(y))
-    else:
-      pop("edx")
-      mul("edx", "ecx")
+    pop("edx")
+    mul("edx", "ecx")
 
   
   elif node.type == "div":
@@ -416,14 +654,10 @@ def cmpl(node):
     x = cmpl(node.left)
     push("ecx")
     y = cmpl(node.right)
-    if x != None and y != None:
-      mov(str(divver(x, y)), "ecx")
-      return str(divver(x, y))
-    else:
-      pop("eax")
-      asm("xorl %edx, %edx")
-      div("eax", "ecx")
-      mov("eax", "ecx")
+    pop("eax")
+    asm("xorl %edx, %edx")
+    div("eax", "ecx")
+    mov("eax", "ecx")
     #pop("eax")
 
   elif node.type == "mod":
@@ -431,15 +665,11 @@ def cmpl(node):
     y = cmpl(node.left)
     push("ecx")
     x = cmpl(node.right)
-    if x != None and y != None:
-      mov(str(int(x) % int(y)), "ecx")
-      return str(int(x) % int(y))
-    else:
-      pop("eax")
-      asm("xorl %edx, %edx")
-      div("eax", "ecx")
-      mov("edx", "ecx")
-      #pop("eax")
+    pop("eax")
+    asm("xorl %edx, %edx")
+    divl("eax", "ecx")
+    mov("edx", "ecx")
+    #pop("eax")
 
   
 

@@ -1,34 +1,610 @@
 [
  Node: Type: global Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: sdef Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
  Node: Type: fdef1 Left: None Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: srdef Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: person1.age ]
+ ]
+ Right: printPersonName(634638) ]
+ Right: printPersonName(person1) ]
+ Right: ('Person', 'person1', [
+[
+[
+Token: TokenType: TT_STRING TokenValue: "Jerry"]
+]
+, [
+[
+Token: TokenType: TT_INTEGER TokenValue: 67]
+]
+, [
+[
+Token: TokenType: TT_STRING TokenValue: "Pasta"]
+]
+]
+) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: main()]
+ ]
+ Right: [
+'']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: None Right: printl(person.favorite_food) ]
+ Right: ('person', 'Person') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: printPersonFavoriteFood(person)]
+ ]
+ Right: [
+'person']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: None Right: printl(person.name) ]
+ Right: ('person', 'Person') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: printPersonName(person)]
+ ]
+ Right: [
+'person']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: None Right: printf("%d\n", person.age) ]
+ Right: ('person', 'Person') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: printPersonAge(person)]
+ ]
+ Right: [
+'person']
+ ]
+ ]
+ Right: [
+ Node: Type: sinfo Left: [
+ Node: Type: structdef Left: [
+ Node: Type: stiden Left: [
+ Node: Type: stiden Left: [
+ Node: Type: stiden Left: None Right: favorite_food ]
+ Right: age ]
+ Right: name ]
+ Right: None ]
+ Right: Person ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: fclose(fp) ]
+ Right: fprintf("") ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(fname, "w") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: fcreate(fname)]
+ ]
+ Right: [
+'fname']
+ ]
+ ]
+ Right: [
  Node: Type: finfo Left: [
  Node: Type: funcdef Left: [
  Node: Type: int_dec Left: [
  Node: Type: identifier Left: [
  Node: Type: int_dec Left: [
  Node: Type: identifier Left: [
- Node: Type: quit_statement Left: None Right: [
+ Node: Type: funccall Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
  Node: Type: int_val Left: None Right: y ]
  ]
  Right: y ]
  Right: [
- Node: Type: int_val Left: None Right: x[
-0]
+ Node: Type: int_val Left: None Right: system(x) ]
  ]
+ Right: strcat(x, v) ]
+ Right: v ]
+ Right: [
+ Node: Type: int_val Left: None Right: i8:100 ]
  ]
  Right: x ]
  Right: [
- Node: Type: int_val Left: None Right: [
-7]
-[
-'H', 'e', 'l', 'l', 'o', 0x0a, 0x00]
+ Node: Type: int_val Left: None Right: i8:100 ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: fdelete(fname)]
+ ]
+ Right: [
+'fname']
  ]
  ]
  Right: [
-Token: TokenType: TT_FUNCCALL TokenValue: main()]
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: forloop Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: i ]
+ ]
+ Right: fclose(fp) ]
+ Right: [
+ Node: Type: fordetails Left: [
+ Node: Type: if_statement Left: [
+ Node: Type: funccall Left: None Right: strncat(buffer, @c, 1) ]
+ Right: [
+ Node: Type: if_details Left: [
+ Node: Type: break Left: None Right: None ]
+ Right: ([
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+c]
+ ]
+, [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+0x0a]
+ ]
+, 'TT_EQUALS') ]
+ ]
+ Right: ('i', [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+0]
+ ]
+, [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+1000]
+ ]
+) ]
+ ]
+ Right: c ]
+ Right: [
+ Node: Type: int_val Left: None Right: ' ' ]
+ ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "r") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: freadline(filename, buffer)]
+ ]
+ Right: [
+'filename', 'buffer']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: c ]
+ ]
+ Right: fclose(fp) ]
+ Right: c ]
+ Right: [
+ Node: Type: int_val Left: None Right: fgetc(fp) ]
+ ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "r") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: fgetchar(filename)]
+ ]
+ Right: [
+'filename']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fclose(fp) ]
+ Right: fgets(buffer, bytes, fp) ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "r") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: readf(filename, buffer, bytes)]
+ ]
+ Right: [
+'filename', 'buffer', 'bytes']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fclose(fp) ]
+ Right: fprintl(fp, data) ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "a") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: appendfl(filename, data)]
+ ]
+ Right: [
+'filename', 'data']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fclose(fp) ]
+ Right: fprintf(fp, data) ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "a") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: appendf(filename, data)]
+ ]
+ Right: [
+'filename', 'data']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fclose(fp) ]
+ Right: fprintl(fp, data) ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "w") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: writefl(filename, data)]
+ ]
+ Right: [
+'filename', 'data']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fclose(fp) ]
+ Right: fprintf(fp, data) ]
+ Right: fp ]
+ Right: [
+ Node: Type: int_val Left: None Right: fopen(filename, "w") ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: writef(filename, data)]
+ ]
+ Right: [
+'filename', 'data']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: None Right: fprintf(fp, "\n") ]
+ Right: fprintf(fp, data) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: fprintl(fp, data)]
+ ]
+ Right: [
+'fp', 'data']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: a ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: sscanf(string, "%d", @a) ]
+ ]
+ Right: a ]
+ Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: string_to_int(string)]
+ ]
+ Right: [
+'string']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: x ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: sprintf(buffer, "%d", n) ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: int_to_string(n, buffer)]
+ ]
+ Right: [
+'n', 'buffer']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: strInput(x) ]
+ Right: printl(prompt) ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: buffer ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: input(prompt, buffer)]
+ ]
+ Right: [
+'prompt', 'buffer']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: if_statement Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: while_loop Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: result ]
+ ]
+ Right: [
+ Node: Type: while_details Left: None Right: ([
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+exp]
+ ]
+, [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+1]
+ ]
+, 'TT_GRTHAN') ]
+ ]
+ Right: result ]
+ Right: [
+ Node: Type: int_val Left: None Right: base ]
+ ]
+ Right: [
+ Node: Type: if_details Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: ([
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+exp]
+ ]
+, [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+0]
+ ]
+, 'TT_EQUALS') ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: pow(base, exp)]
+ ]
+ Right: [
+'base', 'exp']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: x ]
+ ]
+ Right: scanf(" %c", @x) ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: ' ' ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: charInput()]
  ]
  Right: [
 '']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: x ]
+ ]
+ Right: scanf("%d", @x) ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: intInput()]
+ ]
+ Right: [
+'']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: scanf(" %[
+^\n]
+", $v) ]
+ Right: v ]
+ Right: [
+ Node: Type: int_val Left: None Right: @buf ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: strInput(buf)]
+ ]
+ Right: [
+'buf']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: printf(s) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: print(s)]
+ ]
+ Right: [
+'s']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: add Left: [
+ Node: Type: int_val Left: None Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: y ]
+ ]
+ ]
+ Right: y ]
+ Right: [
+ Node: Type: int_val Left: None Right: print("\n") ]
+ ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: print(s) ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: printl(s)]
+ ]
+ Right: [
+'s']
  ]
  ]
  Right: None ]

@@ -52,6 +52,10 @@ def checkExpr(tokens):
       return True, "imp_char", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_IDENTIFIER":
       return True, "identifier", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_STRUCTDEF":
+      return True, "structdef", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_STRUCTREF":
+      return True, "structdef", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_FUNCCALL":
       #print("hit")
       return True, "funccall", Node("int_val", right=tokens[0].getTokenValue())
@@ -133,6 +137,7 @@ def checkExpr(tokens):
       else:
         return False, None, None
     else:
+      print(tokens)
       quit("Unknown expr!")
 
 def checkLogicalExpr(exprs):
@@ -194,6 +199,12 @@ def listTokenSplitters(l, ttypes):
   if tmp != []:
     nl.append(tmp)
   return nl, fi
+
+def checkKeyword(token):
+  if token.getTokenType() == "TT_KEYWORD":
+    return token.getTokenType()
+  else:
+    return False
   
 def parse(tokens):
   AST = Node("global")
@@ -201,6 +212,7 @@ def parse(tokens):
   tmpstream = []
   tmpid = ""
   fname = None
+  sname = None
   for token in tokens:
     #print(tmpstream)
     if tmpid == "fdef":
@@ -215,8 +227,28 @@ def parse(tokens):
       else:
         tokstream = []
         tmpstream.append(token)
+    elif tmpid == "sdef":
+      if token.getTokenType() == "TT_RBRACE":
+
+        appendEndLeft(AST, Node("sdef", right=Node(type="sinfo", right=sname, left=sparse(tmpstream, fname))))
+        tmpid = ""
+        tmpstream = []
+        tokstream = []
+        sname = None
+      else:
+        tokstream = []
+        tmpstream.append(token)
     else:
       tokstream.append(token)
+      
+    if len(tokstream) == 4 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "new":
+      if len(tokstream) == 4 and tokstream[1].getTokenType() == "TT_KEYWORD" and tokstream[1].getTokenValue() == "struct":
+        if tokstream[2].getTokenType() == "TT_IDENTIFIER":
+          sname = tokstream[2].getTokenValue()
+          if tokstream[3].getTokenType() == "TT_LBRACE":
+            
+            tmpid = "sdef"
+            tokstream = []
     if len(tokstream) == 5 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "fn":
       if tokstream[1].getTokenType() == "TT_FUNCCALL":
         fname = tokstream[1]
@@ -226,19 +258,53 @@ def parse(tokens):
               tmpid = "fdef"
               tokstream = []
   return AST
+
+def sparse(tokens, sname):
+  AST = Node("structdef", right=sname)
+  names = listTokenSplitter(tokens, "TT_COMMA")
+  #print(names)
+  for n in names:
+    name = n[0]
+    if name.getTokenType() == "TT_IDENTIFIER":
+      appendEndLeft(
+        AST,
+        Node("stiden", right=name.getTokenValue())
+      )
+    else:
+      quit("Expected 'TT_IDENTIFIER', found '{}' or '{}'!".format(name.getTokenType(), name.getTokenValue()))
+  return AST
+
+def listCombine(l):
+  ''' l = [
+    [],
+    [],
+    [],
+    []
+  ]
+  '''
+  vals = []
+  for i in l:
+    for v in i:
+      vals.append(v)
+    vals.append(Token(TT_SEMICOLON))
+  return vals
       
-      
+# def new <structname> <vname> <data>
+# def new Person person1 "Jerry" 56
 def fparse(tokens, funcname):
   AST = Node("funcdef", right=funcname)
 
   # split our list
   statements = listTokenSplitter(tokens, "TT_SEMICOLON")
 
+
   inif = []
   idx = -1
   skip = 0
 
   for statement in statements:
+    #print('e')
+    #print("\n\n\n\n" + str(statement) + "\n\n")
     #print(statement)
     # int x = 5;
     idx += 1
@@ -280,16 +346,177 @@ def fparse(tokens, funcname):
         else:
           tmpis.append(statement)
 
-      for i in tmpis:
-        tmpf = fparse(i, "tmpf")
+      #print(type(listCombine(tmpis)[0]))
 
-        stuff = tmpf.left
+      tmpf = fparse(listCombine(tmpis), "tmpf")
 
-        appendEndLeft(c.right, stuff)
+      stuff = tmpf.left
+      
+      #rint(stuff)
+
+      appendEndLeft(c.right, stuff)
 
       skip += statesParsed
 
       appendEndLeft(AST, c)
+    
+    elif statement[0].getTokenType() == "TT_IDENTIFIER":
+      sname = statement[0].getTokenValue()
+      if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
+        if statement[2].getTokenType() == "TT_KEYWORD" and statement[2].getTokenValue() == "struct":
+          if statement[3].getTokenType() == "TT_IDENTIFIER":
+            svname = statement[3].getTokenValue()
+            appendEndLeft(
+              AST,
+              Node("asstruct", right=(sname, svname))
+            )
+
+    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "def":
+      if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "new":
+        if statement[2].getTokenType() == "TT_IDENTIFIER":
+          sname = statement[2].getTokenValue()
+          if statement[3].getTokenType() == "TT_IDENTIFIER":
+            vname = statement[3].getTokenValue()
+            stuffs = listTokenSplitter(statement[4:], "TT_COMMA")
+            for stuff in stuffs:
+              x, y, z = checkExpr(stuff)
+              if not x:
+                quit("Semble: Error: expected 'expression' found '{}'!".format(y))
+            appendEndLeft(
+              AST,
+              Node("srdef", right=(sname, vname, stuffs))
+            )
+
+    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "while":
+      name = None
+      value = None
+
+      expr = statement[1:]
+
+      x, y, ttype = checkLogicalExpr(expr)
+
+      c = Node("while_loop", right=Node("while_details", right=(x, y, ttype)))
+
+      tmpis = []
+
+      #global statesParsed
+
+      statesParsed = 0
+      depth = 0
+      
+      for statement in statements[idx+1:]:
+        statesParsed += 1
+        if len(statement) == 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "endwhile":
+          if depth == 0:
+            #print("hit2")
+            break
+          else:
+            tmpis.append(statement)
+            depth -= 1
+        elif len(statement) >= 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "while":
+          #print("hit")
+          tmpis.append(statement)
+          depth += 1
+        else:
+          tmpis.append(statement)
+
+      #print(type(listCombine(tmpis)[0]))
+
+      tmpf = fparse(listCombine(tmpis), "tmpf")
+
+      stuff = tmpf.left
+      
+      #rint(stuff)
+
+      appendEndLeft(c.right, stuff)
+
+      skip += statesParsed
+
+      appendEndLeft(AST, c)
+    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "break":
+      appendEndLeft(
+        AST,
+        Node("break")
+      )
+    
+    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "for":
+      #print("Hel")
+      # for i from 0 to 10;
+      if statement[1].getTokenType() == "TT_IDENTIFIER":
+        name = statement[1].getTokenValue()
+        if statement[2].getTokenType() == "TT_KEYWORD" and statement[2].getTokenValue() == "from":
+          st = statement[3:]
+          sts = []
+          j = False
+          ix = 3
+          for s in st:
+            if s.getTokenValue() != "to":
+              ix += 1
+              sts.append(s)
+            else:
+              j = True
+              break
+          if not j:
+            quit("Expected 'to' in for block!")
+          else:
+            #print(sts)
+            b, t, s = checkExpr(sts)
+            if not b:
+              quit("Unknown expr!")
+            else:
+              n1ex = s
+              ix += 1
+              stuff = statement[ix:]
+              b, t, s = checkExpr(sts)
+              if not b:
+                quit("Unknown expr!")
+              else:
+                #print(stuff)
+                b, t, s = checkExpr(stuff)
+                c = Node("forloop", right=Node("fordetails", left=None, right=(name, n1ex, s)))
+                tmpis = []
+
+                #global statesParsed
+
+                statesParsed = 0
+                depth = 0
+                
+                for statement in statements[idx+1:]:
+                  statesParsed += 1
+                  if len(statement) == 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "endfor":
+                    if depth == 0:
+                      #print("hit2")
+                      break
+                    else:
+                      tmpis.append(statement)
+                      depth -= 1
+                  elif len(statement) >= 1 and statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "for":
+                    #print("hit")
+                    tmpis.append(statement)
+                    depth += 1
+                  else:
+                    tmpis.append(statement)
+
+                #print(type(listCombine(tmpis)[0]))
+
+                tmpf = fparse(listCombine(tmpis), "tmpf")
+
+                stuff = tmpf.left
+                
+                #rint(stuff)
+
+                appendEndLeft(c.right, stuff)
+
+                skip += statesParsed
+
+                appendEndLeft(AST, c)
+
+              
+    elif statement[0].getTokenType() == "TT_FUNCCALL":
+      appendEndLeft(
+        AST,
+        Node("funccall", right=statement[0].getTokenValue())
+      )
     elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "asm":
       if statement[1].getTokenType() == "TT_STRING":
         v = Node("asm_line", right=statement[1].getTokenValue())
@@ -306,7 +533,9 @@ def fparse(tokens, funcname):
         if statement[2].getTokenType() == "TT_EQUALS":
           try:
             x, y, z = checkExpr(statement[3:])
-          except TypeError:
+          except TypeError as te:
+            #print(statement[3:])
+            #print(statement)
             quit("Parser Error: Expected 'expression' found {}".format(statement[3].getTokenType()))
 
 

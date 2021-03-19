@@ -1,0 +1,27 @@
+new struct File {
+  filename,
+  file_pointer,
+  openas
+}
+
+fn generateFile(filename, openas) => {
+    let fp = fopen(filename, openas);
+    printf("%s\n", openas);
+    def new File file filename, fp, openas;
+    printf("%s\n", file.openas);
+    return file;
+}
+
+fn writeToFile(file, data) => {
+    file as struct File;
+    printf("%s\n", file.openas);
+    fprintf(file.file_pointer, data);
+    return 0;
+}
+
+fn closeFile(file) => {
+    file as struct File;
+    printf("%s\n", file.filename);
+    fclose(file.openas);
+    return 0;
+}

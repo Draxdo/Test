@@ -3,8 +3,7 @@
 
 new struct Person {
   name,
-  age,
-  favorite_food
+  age
 }
 
 fn printPersonAge(person) => {
@@ -17,15 +16,9 @@ fn printPersonName(person) => {
   printl(person.name);
 } 
 
-fn printPersonFavoriteFood(person) => {
-  person as struct Person;
-  printl(person.favorite_food);
-}
-
 fn main() => {
-  def new Person person1 "Jerry", 67, "Pasta";
-  printPersonName(person1);
-  printPersonName(634638);
+  def new Person person1 "Jerry", 67;
+  printPersonAge(person1);
 
   return person1.age;
 }

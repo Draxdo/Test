@@ -24,13 +24,53 @@ def checkIndexRef(s):
     else:
       vn += i
   ns = s[idx:]
-  if re.match(r"^\[(\d+)\]$", ns):
-    x = re.match(r"^\[(\d+)\]$", ns)
+  if re.match(r"^\[([^\n\]]+)\]$", ns):
+    x = re.match(r"^\[([^\n\]]+)\]$", ns)
     v = x.group(1)
     return True, vn, v
 
   else:
     return False, None, None
+
+def getNextChar(s, v):
+  try:
+    return s[v+1]
+  except:
+    return None
+
+def parseFuncCall(s):
+  new = ""
+  last = ""
+  tmpid = ""
+  n = 0
+  v = -1
+  for i in s:
+    v += 1
+    if i == " ":
+      if tmpid in ["quote", "chr"] or last in ["+", "-", "*", "/", "%"] or getNextChar(s, v) in ["+", "-", "*", "/", "%"]:
+        new += i
+    else:
+      new += i
+
+    if i == ")" and tmpid in ["paren"]:
+      if n == 0:
+        tmpid = ""
+      else:
+        n -= 1
+    elif i == "(" and tmpid in ["paren", ""]:
+      n += 1
+    elif i == "\"" and tmpid in ["quote"]:
+      tmpid = ""
+    elif i == "\"" and tmpid in [""]:
+      tmpid = "quote"
+    elif i == "'" and tmpid in ["chr"]:
+      tmpid = ""
+    elif i == "'" and tmpid in [""]:
+      tmpid = "chr"
+    else:
+      last = i
+
+  return new
 
 def checkFuncCall(s):
   fn = ""
@@ -44,11 +84,12 @@ def checkFuncCall(s):
       fn += i
   if is_valid_variable_name(fn):
     args = s[idx:-1]
-    args = args.replace(", ", ",").replace(" , ", ",").replace(" ,", ",").replace("  ,  ", ",").replace(",  ", ",").replace("  ,", ",")
+    args = parseFuncCall(args)
     tmpid = 0
     tmpi = ""
     tmp = ""
     new = []
+    #print(args)
     for i in args:
       if i == "(" and tmpi == "":
         tmp += i
@@ -73,6 +114,8 @@ def checkFuncCall(s):
         tmp = ""
       else:
         tmp += i
+    if tmpid != 0:
+      return False, None, None
     new.append(tmp)
     #print(new)
     return True, fn, new
@@ -106,7 +149,15 @@ TT_CHAR = "TT_CHAR"
 TT_ASM = "TT_ASM"
 TT_ARR = "TT_ARR"
 TT_AMP = "TT_AMP"
+TT_COMMA = "TT_COMMA"
 TT_INDEXREF = "TT_INDEXREF"
+TT_STRUCTDEF = "TT_STRUCTDEF"
+
+def is_valid_struct_def(s):
+  s = s.split(".")
+  if len(s) != 2:
+    return False
+  return is_valid_variable_name(s[0]) and is_valid_variable_name(s[1]) and s[0] not in KEYWORDS.keys() and s[1] not in KEYWORDS.keys()
 
 def findKeyFromValue(dictionary, v):
   for key, val in dictionary.items():
@@ -125,6 +176,17 @@ KEYWORDS = {
   "TRUE": "true",
   "FALSE": "false",
   "CONST": "const",
+  "FOR": "for",
+  "FROM": "from",
+  "TO": "to",
+  "ENDFOR": "endfor",
+  "WHILE": "while",
+  "ENDWHILE": "endwhile",
+  "BREAK": "break",
+  "STRUCT": "struct",
+  "NEW": "new",
+  "DEFINE": "def",
+  "AS": "as",
 }
 
 def is_valid_variable_name(name):
@@ -135,6 +197,7 @@ def lex(s):
   tmp = ""
   tmp2 = ""
   tmpid = ""
+  ptmpd = 0
   tokens = []
   for i in s:
     #print(list(tmp))
@@ -151,24 +214,28 @@ def lex(s):
       tmp2 += i
 
     elif i == "(" and tmpid != "quote" and tmpid != "chr" and tmpid != "brac":
-      #print("HEEHEJHE")
+      #print(ptmpd)
       tmpid = "paren"
       tmp2 += i
+      ptmpd += 1
     
     elif i == ")" and tmpid == "paren" and tmpid != "chr" and tmpid != "quote" and tmpid != "brac":
-      #print("hit2")
-      tmpid = ""
       tmp2 += i
+      ptmpd -= 1
+      if ptmpd == 0:
+        tmpid = ""
 
     elif i == "[" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren":
-      #print("HEEHEJHE")
       tmpid = "brac"
       tmp2 += i
+      ptmpd += 1
+
     
     elif i == "]" and tmpid == "brac" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren":
-      #print("hit2")
-      tmpid = ""
       tmp2 += i
+      ptmpd -= 1
+      if ptmpd == 0:
+        tmpid = ""
 
     elif i == "'" and tmpid != "chr" and tmpid != "quote" and tmpid != "paren" and tmpid != "brac":
       tmpid = "chr"
@@ -247,6 +314,11 @@ def lex(s):
       tokens.append(Token(TT_LTHAN))
       tmpid = ""
       tmp2 = ""
+    
+    elif i == "," and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
+      #tokens.append(Token(TT_COMMA))
+      tmp = tmp2
+      tmpid = "comma"
       
     elif i == ";" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       #print("hi")
@@ -265,6 +337,10 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
 
@@ -273,6 +349,10 @@ def lex(s):
       tokens.append(Token(TT_ARR, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
@@ -284,6 +364,10 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
 
@@ -291,6 +375,10 @@ def lex(s):
       tokens.append(Token(TT_INTEGER, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
@@ -302,6 +390,10 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
 
@@ -309,6 +401,10 @@ def lex(s):
       tokens.append(Token(TT_CHAR, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
@@ -320,6 +416,10 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
 
@@ -327,6 +427,10 @@ def lex(s):
       tokens.append(Token(TT_KEYWORD, KEYWORDS[findKeyFromValue(KEYWORDS, tmp)]))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
@@ -338,6 +442,23 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
+
+    elif is_valid_struct_def(tmp):
+      tokens.append(Token(TT_STRUCTDEF, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
       
@@ -345,6 +466,10 @@ def lex(s):
       tokens.append(Token(TT_PTR, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""
@@ -356,6 +481,10 @@ def lex(s):
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
         tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
       tmpid = ""
       tmp = ""
 
@@ -363,6 +492,10 @@ def lex(s):
       tokens.append(Token(TT_FUNCCALL, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
         tmpid = ""
         tmp2 = ""
       tmpid = ""

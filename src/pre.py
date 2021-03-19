@@ -13,7 +13,9 @@ def process(code, n="semble.out"):
   idx = -1
   for line in code:
     idx += 1
-    if line.startswith("#include"):
+    if line.startswith("//"):
+      newcode += "\n"
+    elif line.startswith("#include"):
       l = line.replace("#include ", "")
       l = l.split(", ")
       for f in l:

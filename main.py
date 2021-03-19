@@ -5,12 +5,14 @@ import src.tools
 import src.optimize
 import src.pre
 import re
+import sys
+
 def main(file, n=None):
 
   import os
   debug = True
 
-  version = "Beta 2.2"
+  version = "Beta 2.5"
 
   l = src.tools.readSembleFile(file)
 
@@ -33,7 +35,7 @@ def main(file, n=None):
   os.system("as --32 semble.asm -o semble.o")
   if n != None:
     fname = n
-  os.system("ld -m elf_i386 -o " + fname + " semble.o")
+  os.system("ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o " + fname + " semble.o -lc")
   if not debug:
     os.system("rm semble.o parseout.txt lexout.txt")
 
@@ -42,4 +44,4 @@ if __name__ == '__main__':
   #if re.match(r"^\[\d+\]\[(.*\,)*(.*)\]$", "[7][6, 6,]"):
   #  print("hello")
   #print(src.lex.checkIndexRef("hello[5]"))
-  main("hello.smb")
+  main(sys.argv[1])
