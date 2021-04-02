@@ -167,6 +167,7 @@ def findKeyFromValue(dictionary, v):
   
 KEYWORDS = {
   "INT_DEC": "let",
+  "CONST_DEC": "const",
   "FN_DEC": "fn",
   "QUIT": "quit",
   "RETURN": "return",
@@ -204,6 +205,20 @@ def lex(s):
     #print(tmpid)
 
     #print(tmpid)
+
+    if tmpid == "multiline":
+      if i == "~":
+        tmpid = ""
+        continue
+      continue
+
+    if tmpid == "minus" and i not in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+      tokens.append(Token(TT_MINUS))
+      tmpid = ""
+      tmp2 = ""
+    elif tmpid == "minus":
+      tmp2 += "-"
+      tmpid = ""
 
     if i == "\"" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tmpid = "quote"
@@ -260,6 +275,9 @@ def lex(s):
       tmpid = ""
       tmp2 = ""
 
+    elif i == "~" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
+      tmpid = "multiline"
+
     elif i == "&" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
       tokens.append(Token(TT_AMP))
       tmpid = ""
@@ -271,8 +289,7 @@ def lex(s):
       tmp2 = ""
       
     elif i == "-" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
-      tokens.append(Token(TT_MINUS))
-      tmpid = ""
+      tmpid = "minus"
       tmp2 = ""
 
     elif i == "*" and tmpid != "quote" and tmpid != "chr" and tmpid != "paren" and tmpid != "brac":
@@ -371,7 +388,7 @@ def lex(s):
       tmpid = ""
       tmp = ""
 
-    elif re.match(r"^[0-9]+$", tmp):
+    elif re.match(r"^[-]?[0-9]+$", tmp):
       tokens.append(Token(TT_INTEGER, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))

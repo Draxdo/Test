@@ -1,0 +1,72 @@
+new struct Size {
+    size
+}
+
+new struct Space {
+    space,
+    size
+}
+
+const LINUX_SYSCALL = 0x80;
+
+fn createSize(n) => {
+    def new Size size n;
+    return size;
+}
+
+fn createSpace(size) => {
+    let spacePtr = malloc(size);
+    def new Space space spacePtr, size;
+    return size;
+}
+
+fn resizeSpace(space, newSize) => {
+    space as struct Space;
+    let spacePtr = space.spacePtr;
+    let newSpacePtr = realloc(spacePtr, newSize);
+    memcopy(newSpacePtr, spacePtr, space.size);
+    space.spacePtr = newSpacePtr;
+    space.size = newSize;
+    return 0;
+}
+
+fn write(data, size, fileDescriptor) => {
+    size as struct Size;
+    let dataSize = size.size;
+    asm "movl ~~size, %edx";
+    asm "movl ~~data, %ecx";
+    asm "movl ~~fileDescriptor, %ebx";
+    asm "movl $4, %eax";
+    asm "movl ~~LINUX_SYSCALL, %edi"
+    asm "int %edi";
+    return 0;
+}
+
+~
+    Semble STDLIB Reference -
+        + "base.smb"
+            + Size (struct)
+                + size - integer
+            + Space (struct)
+                + space - pointer to space
+                + size - integer
+            + createSize (function) - returns object of type Size
+                + n - integer
+            + createSpace (function) - returns object of type Space
+                + n - integer
+            + resizeSpace (function) - returns Nothing
+                + space - space variable
+                + newSize - integer
+            + write (function) - returns Nothing
+                + data - data to write
+                + size - integer
+                + fileDescriptor - fileDescriptor/filePointer to location
+        + "strings.smb"
+            + String (struct)
+                + value - str
+                + length - integer
+                + location - hex value
+            + createString (function) - returns object of type String
+                + value - String
+            + str
+~

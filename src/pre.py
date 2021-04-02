@@ -1,6 +1,8 @@
 import src.linkmain
 import os
 
+inimports = []
+
 num = 0
 
 def process(code, n="semble.out"):
@@ -11,9 +13,11 @@ def process(code, n="semble.out"):
   code = code.split("\n")
   name = n
   idx = -1
+  #newcode += importf("base.smb", newcode)
   for line in code:
     idx += 1
-    if line.startswith("//"):
+    #print(line)
+    if line.strip().startswith("//"):
       newcode += "\n"
     elif line.startswith("#include"):
       l = line.replace("#include ", "")
@@ -39,34 +43,22 @@ def process(code, n="semble.out"):
       break
     else:
       newcode += "\n" + line
-    
   return newcode, name
   
 def importf(f, code):
-  try:
-    with open("libs/" + f, "r") as file:
-      for l in file:
-        code += "\n" + l
-      return code
-  except:
-    quit("Unkown file!")
-
-'''
-#program main
-
-fn main {
-  quit 0;
-}
-
-#file other
-
-fn main {
-  quit 2;
-}
-
-#linkedfile somefile
-
-fn other {
-  quit 1;
-}
-'''
+  new = ""
+  #print(list(f))
+  if f in inimports:
+    return "\n"
+  else:
+    #print(inimports)   
+    inimports.append(f)
+    try:
+      with open("libs/" + f, "r") as file:
+        for l in file:
+          new += "\n" + l
+        #print()
+        return process(new)[0]
+    except Exception as e:
+      #print(e)
+      quit("Unkown file '{}'!".format(f))

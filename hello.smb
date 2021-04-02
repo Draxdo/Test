@@ -1,31 +1,10 @@
 #program main
-#include stdlib.smb
-
-new struct Person {
-  name,
-  age,
-  favorite_food
-}
-
-fn printPersonAge(person) => {
-  person as struct Person;
-  printf("%d\n", person.age);
-}
-
-fn printPersonName(person) => {
-  person as struct Person;
-  printl(person.name);
-} 
-
-fn printPersonFavoriteFood(person) => {
-  person as struct Person;
-  printl(person.favorite_food);
-}
+#include base.smb
 
 fn main() => {
-  def new Person person1 "Jerry", 67, "Pasta";
-  printPersonName(person1);
-  printPersonName(634638);
-
-  return person1.age;
+    let x = createSpace(100);
+    x as struct Space;
+    strcpy(x, "Hello");
+    
+    return 0;
 }

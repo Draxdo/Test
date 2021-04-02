@@ -227,6 +227,32 @@ def parse(tokens):
       else:
         tokstream = []
         tmpstream.append(token)
+    elif tmpid == "gdec":
+      if token.getTokenType() == "TT_SEMICOLON":
+        x, y, z = checkExpr(tmpstream)
+        if not x:
+          quit("Expected expression, found {}!".format(tmpstream))
+        appendEndLeft(AST, Node("gdec", right=Node("sinfo", right=vname, left=z)))
+        tmpid = ""
+        tmpstream = []
+        tokstream = []
+        vname = None
+      else:
+        tokstream = []
+        tmpstream.append(token)
+    elif tmpid == "cgdec":
+      if token.getTokenType() == "TT_SEMICOLON":
+        x, y, z = checkExpr(tmpstream)
+        if not x:
+          quit("Expected expression, found {}!".format(tmpstream))
+        appendEndLeft(AST, Node("cgdec", right=Node("sinfo", right=vname, left=z)))
+        tmpid = ""
+        tmpstream = []
+        tokstream = []
+        vname = None
+      else:
+        tokstream = []
+        tmpstream.append(token)
     elif tmpid == "sdef":
       if token.getTokenType() == "TT_RBRACE":
 
@@ -249,7 +275,7 @@ def parse(tokens):
             
             tmpid = "sdef"
             tokstream = []
-    if len(tokstream) == 5 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "fn":
+    elif len(tokstream) == 5 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "fn":
       if tokstream[1].getTokenType() == "TT_FUNCCALL":
         fname = tokstream[1]
         if tokstream[2].getTokenType() == "TT_EQUALS":
@@ -257,6 +283,18 @@ def parse(tokens):
             if tokstream[4].getTokenType() == "TT_LBRACE":
               tmpid = "fdef"
               tokstream = []
+    elif len(tokstream) == 3 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "let":
+      if tokstream[1].getTokenType() == "TT_IDENTIFIER":
+        vname = tokstream[1].getTokenValue()
+        if tokstream[2].getTokenType() == "TT_EQUALS":
+          tmpid = "gdec"
+          tokstream = []
+    elif len(tokstream) == 3 and tokstream[0].getTokenType() == "TT_KEYWORD" and tokstream[0].getTokenValue() == "const":
+      if tokstream[1].getTokenType() == "TT_IDENTIFIER":
+        vname = tokstream[1].getTokenValue()
+        if tokstream[2].getTokenType() == "TT_EQUALS":
+          tmpid = "cgdec"
+          tokstream = []
   return AST
 
 def sparse(tokens, sname):
@@ -266,6 +304,7 @@ def sparse(tokens, sname):
   for n in names:
     name = n[0]
     if name.getTokenType() == "TT_IDENTIFIER":
+      #print(Node("stiden", right=name.getTokenValue()))
       appendEndLeft(
         AST,
         Node("stiden", right=name.getTokenValue())
@@ -359,7 +398,33 @@ def fparse(tokens, funcname):
       skip += statesParsed
 
       appendEndLeft(AST, c)
-    
+    elif statement[0].getTokenType() == "TT_IDENTIFIER" or statement[0].getTokenType() == "TT_STRUCTDEF" or statement[0].getTokenType() == "TT_INDEXREF":
+      #print("eueu")
+      name = statement[0].getTokenValue()
+      if statement[1].getTokenType() == "TT_EQUALS":
+        try:
+          x, y, z = checkExpr(statement[2:])
+        except TypeError:
+          quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
+        
+        if x:
+          value = z
+          x = Node("set_mov_equals", left=Node("identifier", right=name), right=value)
+          appendEndLeft(AST, x)
+        else:
+              quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
+      elif statement[0].getTokenType() == "TT_IDENTIFIER":
+        sname = statement[0].getTokenValue()
+        if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
+          if statement[2].getTokenType() == "TT_KEYWORD" and statement[2].getTokenValue() == "struct":
+            if statement[3].getTokenType() == "TT_IDENTIFIER":
+              svname = statement[3].getTokenValue()
+              appendEndLeft(
+                AST,
+                Node("asstruct", right=(sname, svname))
+              )
+      #else:
+      #  quit("{}: Expected 'equals'! Found <".format(statement) + statement[1].getTokenType() + ">")
     elif statement[0].getTokenType() == "TT_IDENTIFIER":
       sname = statement[0].getTokenValue()
       if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
@@ -554,7 +619,43 @@ def fparse(tokens, funcname):
 
 
         else:
-          quit("Parser Error: Expected 'equals' found {}".format(statement[2].getTokenType()))
+          quit("Var Dec: Parser Error: Expected 'equals' found {}".format(statement[2].getTokenType()))
+
+
+      else:
+        quit("Parser Error: Expected 'identifier' found '{}'".format(statement[1].getTokenType()))
+    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "const":
+      # found int dec keyword, will now parse...
+
+      if statement[1].getTokenType() == "TT_IDENTIFIER":
+        name = statement[1].getTokenValue()
+
+
+        if statement[2].getTokenType() == "TT_EQUALS":
+          try:
+            x, y, z = checkExpr(statement[3:])
+          except TypeError as te:
+            #print(statement[3:])
+            #print(statement)
+            quit("Parser Error: Expected 'expression' found {}".format(statement[3].getTokenType()))
+
+
+          if x:
+            value = z
+            x = None
+            if isinstance(value, list):
+              x = Node("const_dec", left=Node("identifier", right=name), right=value)
+            else:
+              x = Node("const_dec", left=Node("identifier", right=name), right=value)
+            appendEndLeft(AST, x)
+
+
+          else:
+             quit("Parser Error: Expected 'expression' found {}".format(statement[3].getTokenType()))
+
+
+        else:
+          quit("Const Dec: Parser Error: Expected 'equals' found {}".format(statement[2].getTokenType()))
 
 
       else:
@@ -571,22 +672,6 @@ def fparse(tokens, funcname):
         appendEndLeft(AST, x)
       else:
         quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
-    elif statement[0].getTokenType() == "TT_IDENTIFIER" or statement[0].getTokenType() == "TT_INDEXREF":
-      name = statement[0].getTokenValue()
-      if statement[1].getTokenType() == "TT_EQUALS":
-        try:
-          x, y, z = checkExpr(statement[2:])
-        except TypeError:
-          quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
-        
-        if x:
-          value = z
-          x = Node("set_mov_equals", left=Node("identifier", right=name), right=value)
-          appendEndLeft(AST, x)
-        else:
-          quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
-      else:
-        quit("Expected 'equals'! Found <" + statement[1].getTokenType() + ">")
     elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "return":
       try:
         x, y, z = checkExpr(statement[1:])
@@ -599,4 +684,6 @@ def fparse(tokens, funcname):
         appendEndLeft(AST, x)
       else:
         quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
+    else:
+      quit("Unknown statement '{}'!".format(statement))
   return AST

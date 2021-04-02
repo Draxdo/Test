@@ -12,7 +12,9 @@ def redundancy(f):
   lastLine = ""
   while idx < len(lines):
     x = lines[idx]
-    if x != lastLine:
+    if len(x.strip()) == 0:
+      idx += 1
+    elif x != lastLine or x.strip()[0] == ".":
       lastLine = x
       idx += 1
     else:

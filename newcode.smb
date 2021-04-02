@@ -1,0 +1,8 @@
+
+
+fn main() => {
+    let x = i8:100;
+    strcpy(x, "Hello World");
+    printf("%s\n", x);
+    return 0;
+}

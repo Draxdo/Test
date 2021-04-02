@@ -7,7 +7,7 @@ import src.pre
 import re
 import sys
 
-def main(file, n=None):
+def main(file, n=None, first=False):
 
   import os
   debug = True
@@ -16,7 +16,13 @@ def main(file, n=None):
 
   l = src.tools.readSembleFile(file)
 
+  #if first:
+  #  l += src.pre.importf("base.smb", l)[0]
+
   l, fname = src.pre.process(l)
+
+  with open("newcode.smb", "w") as newcode:
+    newcode.write(l)
 
   x = src.lex.lex(l)
 
@@ -38,10 +44,11 @@ def main(file, n=None):
   os.system("ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o " + fname + " semble.o -lc")
   if not debug:
     os.system("rm semble.o parseout.txt lexout.txt")
+  
 
 if __name__ == '__main__':
   #print(src.lex.checkFuncCall("hello(helo,hello, h)"))
   #if re.match(r"^\[\d+\]\[(.*\,)*(.*)\]$", "[7][6, 6,]"):
   #  print("hello")
   #print(src.lex.checkIndexRef("hello[5]"))
-  main(sys.argv[1])
+  main(sys.argv[1], first=True)

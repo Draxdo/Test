@@ -15,6 +15,10 @@ functionEpilouge = [
   "\tret\n"
 ]
 
+funcleaves = {
+
+}
+
 funcnums = {
   
 }
@@ -33,12 +37,17 @@ varias = {
 }
 
 data = {
-  
+}
+
+globalss = {
+
 }
 
 strings = {
   
 }
+
+splaces = 4
 
 structbeenptrs = {
   
@@ -52,17 +61,35 @@ bss = {
 
 }
 
+consts = [
+
+]
+
+constglobals = [
+
+]
+
 fstructs = {
 
 }
+
+def Reverse(lst):
+    return [ele for ele in reversed(lst)]
 
 def checkStructDef(s):
   return s.split(".")
 
 class Struct:
-  def __init__(self, name, variz, starting):
+  def __init__(self, name, variz, starting, rev=False):
     self.name = name
     self.variz = variz
+    #print(self.variz)
+    '''if rev:
+      #print("eho")
+      v = self.variz[1:]
+      self.variz = Reverse(self.variz)
+      self.variz = [self.variz[0]] + [self.variz[1]] + self.variz[2:]
+      print(self.variz)'''
     self.starting = starting
   def getvalue(self, s):
     if s in self.variz:
@@ -152,16 +179,51 @@ def seval(name, node):
     v = v + x
   return v
 
+def addGlobal(g, val):
+  #print(val)
+  #print(g)
+  globalss[g] = val
+
+class Console:
+  def __init__(self, file):
+    self.file = file
+    with open(self.file, "w") as fw:
+      fw.write("")
+  def log(self, s):
+    with open(self.file, "a") as fw:
+      fw.write(str(s) + "\n")
+  def clear(self):
+    with open(self.file, "w") as fw:
+      fw.write("")
+
+console = Console("console.txt")
+
 def cmpl(node):
-  global n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs
+  global splaces, n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs, funcleaves, consts, constglobals, globalss
   #print(fstructs)
   #print(varias)
   #print("Entered cmpl()")
   #print("node.left: {}".format(node.left))
   #print(node.type)
-  
+  #ngl = globalss
+  #print(globalss)
+  ngl = dict(globalss)
+  for i in globalss:
+    for ni in globalss[i]:
+      if ni == "%":
+        varias[i] = globalss[i]
+        console.log(varias)
+        del ngl[i]
+        console.log(varias)
+        break
+    #print(len(globalss) - len(ngl))
+  globalss = ngl
+  #print(globalss)
+  #globalss = ngl
   if node == None:
     return None
+
+  #print(varias)
   
   if currentFunc == None:
     if node != None and node.left != None and node.left.type == "fdef1":
@@ -176,8 +238,12 @@ def cmpl(node):
         funcs[fname] =[]
         funcargs[fname] = []
         funcnums[fname] = 0
+        n = n + 1
+        funcleaves[fname] = ".leaver" + str(n)
         fstructs = {}
-        varias = {}
+        consts = []
+        varias = globalss
+        #print(globalss)
         idx = 4
         for arg in args:
           idx += 4
@@ -185,14 +251,57 @@ def cmpl(node):
             break
           elif is_valid_variable_name(arg):
             varias[arg] = str(idx) + "(%ebp)"
-            
+            #print(varias[arg])
             funcargs[currentFunc].append(args)
 
           else:
             quit("Invalid argument <" + arg + ">!")
+        
         cmpl(node.left.right.left)
+        #print(varias)
         currentFunc = None
         cmpl(node.left)
+    elif node != None and node.left != None and node.left.type == "gdec":
+      vname = node.left.right.right
+      n = n + 1
+      v = "globalLOCK" + str(n)
+      data["globalLOCK" + str(n)] = ".long 0"
+      gh = funcs["_start"]
+      currentFunc = "_start"
+      varias = globalss
+      funcs["_start"] = []
+      cmpl(node.left.right.left)
+      asm("movl %ecx, " + v)
+      funcs["_start"] = funcs["_start"] + gh
+      currentFunc = None
+      if vname in globalss:
+        quit("Global <{}> already defined!".format(vname))
+      else:
+        addGlobal(vname, v)
+        cmpl(node.left)
+        return None
+      varias = {}
+    elif node != None and node.left != None and node.left.type == "cgdec":
+      vname = node.left.right.right
+      n = n + 1
+      v = "globalLOCK" + str(n)
+      data["globalLOCK" + str(n)] = ".long 0"
+      gh = funcs["_start"]
+      currentFunc = "_start"
+      varias = globalss
+      constglobals.append(vname)
+      funcs["_start"] = []
+      cmpl(node.left.right.left)
+      asm("movl %ecx, " + v)
+      funcs["_start"] = funcs["_start"] + gh
+      currentFunc = None
+      if vname in globalss:
+        quit("Global <{}> already defined!".format(vname))
+      else:
+        addGlobal(vname, v)
+        cmpl(node.left)
+        return None
+      varias = {}
     elif node != None and node.left != None and node.left.type == "sdef":
       # struct
       sname = node.left.right.right
@@ -203,7 +312,7 @@ def cmpl(node):
         return None
       else:
         structs[sname] = v
-
+        #print(sname)
         cmpl(node.left)
         return None
 
@@ -216,32 +325,47 @@ def cmpl(node):
     vname = node.left.right[1]
     stuffs = node.left.right[2]
     # you're to have a place in memory
+    asm("pushl $" + str(len(stuffs) * 4))
+    asm("call malloc")
+    funcnums[currentFunc] += 4
+    v = "-" + str(funcnums[currentFunc]) + "(%ebp)"
+    asm("movl %eax, " + v)
+    if vname in varias:
+      quit("Predefined variable {}!".format(vname))
+    varias[vname] = v
     idx = -1
-    first = "-" + str(funcnums[currentFunc] + 4) + "(%ebp)"
+    #print(structs[sname])
     for i in structs[sname]:
       idx += 1
-      funcnums[currentFunc] += 4
-      if stuffs[idx] == None:
-        asm("movl $0 %ecx")
+      try:
+        x = stuffs[idx]
+      except:
+        x = False
+      if x == False:
+        asm("movl $0, %ecx")
       else:
         cmpl(checkExpr(stuffs[idx])[2])
-        if nextAdd > 0 and currentFunc != None:
-          funcnums[currentFunc] += nextAdd
-          nextAdd = 0
-          v = True
-      if sname + "__" + i in varias:
-        quit("Predefined {}!")
-      varias[vname + "__" + i] = "-" + str(funcnums[currentFunc]) + "(%ebp)"
-        
-      asm("movl %ecx, " + varias[vname + "__" + i])
-    varias[vname] = first
-    sva = Struct(sname, structs[sname], first)
+      asm("movl " + v + ", %ebx")
+      if idx == 0:
+        prefix = ""
+      else:
+        prefix = "" + str(idx * 4)
+      asm("movl %ecx, " + prefix + "(%ebx)")
+    sva = Struct(sname, structs[sname], v)
     fstructs[vname] = sva
     cmpl(node.left)
+    
+      
 
   elif node.left != None and node.left.type == "asstruct":
     if node.left.right[0] in varias:
-      x = Struct(node.left.right[0], structs[node.left.right[1]], varias[node.left.right[0]])
+      try:
+        #print(structs.keys())
+        #print(structs)
+        x = Struct("" + str(node.left.right[0]) + "", structs[node.left.right[1]], varias[node.left.right[0]], rev=True)
+        #print(str(x))
+      except IndexError:
+        quit("No struct '{}' or no variable '{}'!".format(node.left.right[1], node.left.right[0]))
       fstructs[node.left.right[0]] = x
       cmpl(node.left)
       return None
@@ -406,6 +530,27 @@ def cmpl(node):
       cmpl(node.left.left)
       return None
     else:
+      #print(node.left.left.right)
+      quit("{}: Prenamed variable <".format(node.left) + str(node.left.left.right) + ">!")
+  
+  elif node.left != None and node.left.type == "const_dec":
+    #print("Entered cmpl.int_dec()")
+    if node.left.left.right not in varias.keys():
+      cmpl(node.left.right)
+      ints.append(node.left.left.right)
+      funcnums[currentFunc] += 4
+      varias[node.left.left.right] = "-" + str(funcnums[currentFunc]) + "(%ebp)"
+      consts.append(node.left.left.right)
+      v = False
+      if nextAdd > 0 and currentFunc != None:
+        funcnums[currentFunc] += nextAdd
+        nextAdd = 0
+        v = True
+      if not v:
+        asm("movl %ecx, " + varias[node.left.left.right])
+      cmpl(node.left.left)
+      return None
+    else:
       quit("Prenamed variable <" + str(node.left.left.right) + ">!")
 
   elif node.left != None and node.left.type == "asm_line":
@@ -418,16 +563,45 @@ def cmpl(node):
     return None
   
   elif node.left != None and node.left.type == "set_mov_equals":
-    #print(node.left.left.right)
-    if node.left.left.right in varias.keys():
+    if node.left.left.right in consts or node.left.left.right in constglobals:
+      #print(constglobals)
+      quit("Variable <" + str(node.left.left.right) + "> is a constant!")
+    #print(is_valid_struct_def(node.left.left.right))
+    if node.left.left.right in globalss.keys():
+      cmpl(node.left.right)
+      asm("movl %ecx, " + globalss[node.left.left.right])
+      cmpl(node.left.left)
+      return None 
+    elif node.left.left.right in varias.keys():
+      #print("ui")
       cmpl(node.left.right)
       asm("movl %ecx, " + varias[node.left.left.right])
       cmpl(node.left.left)
       return None
+    
+    elif is_valid_struct_def(node.left.left.right):
+      val = node.left.left.right
+      cmpl(node.left.right)
+      x = checkStructDef(val)
+      if x[0] in fstructs:
+        #print(x[0])
+        fstructs[x[0]].getvalue(x[1])
+        asm("movl " + varias[x[0]] + ", %ebx")
+        if x[1] in fstructs[x[0]].variz:
+          if str(fstructs[x[0]].variz.index(x[1]) * 4) == "0":
+            prefix = ""
+          else:
+            prefix = "" + str(fstructs[x[0]].variz.index(x[1]) * 4)
+          asm("movl %ecx, " + prefix + "(%ebx)")
+          cmpl(node.left.left)
+
+          return None
+        else:
+          quit("Unknown variable '{}'!".format(x[0]))
     elif checkIndexRef(node.left.left.right)[0]:
       val = node.left.left.right
       b, fn, index = checkIndexRef(val)
-      print(varias[fn])
+      #print(varias[fn])
       val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
       ab = int(val)
       cmpl(checkExpr(lex(index + "\n"))[2])
@@ -438,8 +612,8 @@ def cmpl(node):
       asm(".sksb" + str(n) + ":")
       n += 1
       add(str(ab), "ecx")
-      print(val)
-      print(ab)
+      #print(val)
+      #print(ab)
       asm("movl %ebp, %edi")
       sub("ecx", "edi")
       cmpl(node.left.right)
@@ -458,8 +632,7 @@ def cmpl(node):
   elif node.left != None and node.left.type == "return_statement":
     cmpl(node.left.right)
     mov("ecx", "eax")
-    asm("leave")
-    asm("ret")
+    asm("jmp " + funcleaves[currentFunc])
 
   elif node.left == None and node.type == "int_val":
     val = node.right
@@ -474,11 +647,19 @@ def cmpl(node):
 
     elif is_valid_struct_def(val):
       x = checkStructDef(val)
+      #print(x[0])
+      #print(fstructs)
       if x[0] in fstructs:
+        #print(x[0])
         fstructs[x[0]].getvalue(x[1])
-        asm("leal " + fstructs[x[0]].starting + ", %ebx")
+        asm("movl " + varias[x[0]] + ", %ebx")
         if x[1] in fstructs[x[0]].variz:
-          asm("movl " + str(fstructs[x[0]].variz.index(x[1]) * 4) + "(%ebx), %ecx")
+          if str(fstructs[x[0]].variz.index(x[1]) * 4) == "0":
+            prefix = ""
+          else:
+            prefix = "" + str(fstructs[x[0]].variz.index(x[1]) * 4)
+          asm("movl " + prefix + "(%ebx), %ecx")
+          #print("movl " + prefix + "(%ebx), %ecx")
         else:
           quit("Semble: Error: Data structure '{}' has no type '{}'!".format(x[0], x[1]))
       else:
@@ -562,8 +743,9 @@ def cmpl(node):
 
     elif re.match(r"^(i8:)\d+$", val):
       v = val[3:]
-      bss["BSSLOCK" + str(n)] = str(v)
-      asm("movl $" + "BSSLOCK" + str(n) + ", %ecx")
+      asm("pushl $" + str(v))
+      asm("call malloc")
+      asm("movl %eax, %ecx")
       n += 1
         
     elif re.match(r'^["][^\n]*["]$', val):
@@ -579,8 +761,9 @@ def cmpl(node):
     elif is_valid_variable_name(val):
       try:
         g = varias[val]
-      except:
-        quit("Unknown variable <" + val +">!")
+      except Exception as er:
+        #print(varias)
+        quit(": Unknown variable <" + val +">!")
       asm("movl " + g + ", %ecx")
 
     elif len(val) >= 2 and val[0] == "@" and is_valid_variable_name(val[1:]):
@@ -593,8 +776,8 @@ def cmpl(node):
     elif len(val) >= 2 and val[0] == "$" and is_valid_variable_name(val[1:]):
       x = val[1:]
       if x in varias:
-        asm("movl " + varias[x] + ", %esi")
-        asm("movl (%esi), %ecx")
+        asm("movl " + varias[x] + ", %edi")
+        asm("movl (%edi), %ecx")
       else:
         quit("Unknown variable <" + str(x) + ">!")
 
@@ -615,7 +798,7 @@ def cmpl(node):
             quit("Invalid expression <" + arg + ">!")
       asm("call " + fn)
       mov("eax", "ecx")
-      pop("ebx")
+      #pop("ebx")
     else:
       asm("movl $" + val + ", %ecx")
       return val
@@ -708,7 +891,12 @@ def cmpf(ast, f):
     for d in data:
       fw.write("\n" + d + ":\n")
       di = data[d]
-      fw.write("\t" + di + "\n")
+      fi = di.split("\n")
+      for i in fi:
+        #print(i)
+        fw.write("\t" + i + "\n")
+    fw.write("\n\nL45SDEF:\n\n")
+    # fw.write("\t.section .bss\n")
     fw.write("\t.section .bss\n")
     for b in bss:
       fw.write("\n.lcomm " + b + ", " + str(bss[b]) + "\n")
@@ -722,11 +910,19 @@ def cmpf(ast, f):
         for pl in functionProlouge:
           fw.write(pl)
         if funcnums[func] > 0:
+          # print(func)
           fw.write("\n\tsubl $" + str(funcnums[func]) + ", %esp\n")
 
       for fl in funcs[func]:
         fw.write("\t"+ fl + "\n")
 
       if func != "_start":
+        fw.write("\t" + funcleaves[func] + ":\n")
         for el in functionEpilouge:
           fw.write(el)
+
+
+'''
+-> "hello.txt"
+-> 
+'''
