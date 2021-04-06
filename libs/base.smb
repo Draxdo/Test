@@ -9,23 +9,23 @@ new struct Space {
 
 const LINUX_SYSCALL = 0x80;
 
-fn createSize(n) => {
-    def new Size size n;
+fn Size(n) => {
+    Size size = n;
     return size;
 }
 
-fn createSpace(size) => {
+fn Space(size) => {
     let spacePtr = malloc(size);
-    def new Space space spacePtr, size;
-    return size;
+    Space space = spacePtr, size;
+    return space;
 }
 
 fn resizeSpace(space, newSize) => {
     space as struct Space;
-    let spacePtr = space.spacePtr;
+    let spacePtr = space.space;
     let newSpacePtr = realloc(spacePtr, newSize);
-    memcopy(newSpacePtr, spacePtr, space.size);
-    space.spacePtr = newSpacePtr;
+    memcpy(newSpacePtr, spacePtr, space.size);
+    space.space = newSpacePtr;
     space.size = newSize;
     return 0;
 }
@@ -50,9 +50,9 @@ fn write(data, size, fileDescriptor) => {
             + Space (struct)
                 + space - pointer to space
                 + size - integer
-            + createSize (function) - returns object of type Size
+            + Size (function) - returns object of type Size
                 + n - integer
-            + createSpace (function) - returns object of type Space
+            + Space (function) - returns object of type Space
                 + n - integer
             + resizeSpace (function) - returns Nothing
                 + space - space variable

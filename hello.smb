@@ -1,10 +1,11 @@
 #program main
-#include base.smb
+#include strings.smb
 
 fn main() => {
-    let x = createSpace(100);
-    x as struct Space;
-    strcpy(x, "Hello");
-    
-    return 0;
+    let x = String("Hello ");
+    let y = String("World!");
+    let z = String(" Jimmy!");
+    let a = x + y + z;
+    a as struct String;
+    printf("%s\n", a.value);
 }

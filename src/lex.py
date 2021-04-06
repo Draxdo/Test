@@ -186,7 +186,6 @@ KEYWORDS = {
   "BREAK": "break",
   "STRUCT": "struct",
   "NEW": "new",
-  "DEFINE": "def",
   "AS": "as",
 }
 

@@ -413,21 +413,8 @@ def fparse(tokens, funcname):
           appendEndLeft(AST, x)
         else:
               quit("Parser Error: Expected 'expression' found {}".format(statement[1].getTokenType()))
-      elif statement[0].getTokenType() == "TT_IDENTIFIER":
+      elif statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
         sname = statement[0].getTokenValue()
-        if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
-          if statement[2].getTokenType() == "TT_KEYWORD" and statement[2].getTokenValue() == "struct":
-            if statement[3].getTokenType() == "TT_IDENTIFIER":
-              svname = statement[3].getTokenValue()
-              appendEndLeft(
-                AST,
-                Node("asstruct", right=(sname, svname))
-              )
-      #else:
-      #  quit("{}: Expected 'equals'! Found <".format(statement) + statement[1].getTokenType() + ">")
-    elif statement[0].getTokenType() == "TT_IDENTIFIER":
-      sname = statement[0].getTokenValue()
-      if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "as":
         if statement[2].getTokenType() == "TT_KEYWORD" and statement[2].getTokenValue() == "struct":
           if statement[3].getTokenType() == "TT_IDENTIFIER":
             svname = statement[3].getTokenValue()
@@ -435,22 +422,20 @@ def fparse(tokens, funcname):
               AST,
               Node("asstruct", right=(sname, svname))
             )
-
-    elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "def":
-      if statement[1].getTokenType() == "TT_KEYWORD" and statement[1].getTokenValue() == "new":
-        if statement[2].getTokenType() == "TT_IDENTIFIER":
-          sname = statement[2].getTokenValue()
-          if statement[3].getTokenType() == "TT_IDENTIFIER":
-            vname = statement[3].getTokenValue()
-            stuffs = listTokenSplitter(statement[4:], "TT_COMMA")
-            for stuff in stuffs:
-              x, y, z = checkExpr(stuff)
-              if not x:
-                quit("Semble: Error: expected 'expression' found '{}'!".format(y))
-            appendEndLeft(
-              AST,
-              Node("srdef", right=(sname, vname, stuffs))
-            )
+      elif statement[1].getTokenType() == "TT_IDENTIFIER":
+        sname = statement[0].getTokenValue()
+        vname = statement[1].getTokenValue()
+        if statement[2].getTokenType() == "TT_EQUALS":
+          stuffs = listTokenSplitter(statement[3:], "TT_COMMA")
+          #print(stuffs)
+          for stuff in stuffs:
+            x, y, z = checkExpr(stuff)
+            if not x:
+              quit("Semble: Error: expected 'expression' found '{}'!".format(y))
+          appendEndLeft(
+            AST,
+            Node("srdef", right=(sname, vname, stuffs))
+          )
 
     elif statement[0].getTokenType() == "TT_KEYWORD" and statement[0].getTokenValue() == "while":
       name = None
@@ -578,6 +563,7 @@ def fparse(tokens, funcname):
 
               
     elif statement[0].getTokenType() == "TT_FUNCCALL":
+      #print(Node("funccall", right=statement[0].getTokenValue()))
       appendEndLeft(
         AST,
         Node("funccall", right=statement[0].getTokenValue())

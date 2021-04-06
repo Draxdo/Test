@@ -28,6 +28,7 @@ funcs = {
 }
 
 currentFunc = None
+vvalue = False
 
 tmpid = ""
 valueStack = []
@@ -53,16 +54,8 @@ structbeenptrs = {
   
 }
 
-funcargs = {
-
-}
-
-bss = {
-
-}
-
-consts = [
-
+funcargs = {}
+bss = [
 ]
 
 constglobals = [
@@ -79,10 +72,16 @@ def Reverse(lst):
 def checkStructDef(s):
   return s.split(".")
 
+def getstype(variz):
+  for i in structs:
+    if variz == structs[i]:
+      return i
+
 class Struct:
   def __init__(self, name, variz, starting, rev=False):
     self.name = name
     self.variz = variz
+    self.stype = getstype(self.variz)
     #print(self.variz)
     '''if rev:
       #print("eho")
@@ -179,6 +178,8 @@ def seval(name, node):
     v = v + x
   return v
 
+automakeStruct = False
+
 def addGlobal(g, val):
   #print(val)
   #print(g)
@@ -199,7 +200,7 @@ class Console:
 console = Console("console.txt")
 
 def cmpl(node):
-  global splaces, n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs, funcleaves, consts, constglobals, globalss
+  global vvalue, automakeStruct, splaces, n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs, funcleaves, consts, constglobals, globalss
   #print(fstructs)
   #print(varias)
   #print("Entered cmpl()")
@@ -272,6 +273,9 @@ def cmpl(node):
       funcs["_start"] = []
       cmpl(node.left.right.left)
       asm("movl %ecx, " + v)
+      if automakeStruct != False:
+        cmpl(fparse(lex("{} as struct {};".format(node.left.left.right, automakeStruct)), "tmp"))
+        automakeStruct = False
       funcs["_start"] = funcs["_start"] + gh
       currentFunc = None
       if vname in globalss:
@@ -293,6 +297,9 @@ def cmpl(node):
       funcs["_start"] = []
       cmpl(node.left.right.left)
       asm("movl %ecx, " + v)
+      if automakeStruct != False:
+        cmpl(fparse(lex("{} as struct {};".format(node.left.left.right, automakeStruct)), "tmp"))
+        automakeStruct = False
       funcs["_start"] = funcs["_start"] + gh
       currentFunc = None
       if vname in globalss:
@@ -358,6 +365,8 @@ def cmpl(node):
       
 
   elif node.left != None and node.left.type == "asstruct":
+    if automakeStruct == True:
+      print("jeee")
     if node.left.right[0] in varias:
       try:
         #print(structs.keys())
@@ -380,8 +389,10 @@ def cmpl(node):
     return None
 
   elif node.left != None and node.left.type == "funccall":
+    #print("juud")
     val = node.left.right
     b, fn, args = checkFuncCall(val)
+    #print(args)
     for arg in reversed(args):
       if arg == "":
         break
@@ -399,7 +410,6 @@ def cmpl(node):
   
   elif node.left != None and node.left.type == "forloop":
     fordetails = node.left.right
-    vname = fordetails.right[0]
     fromv = fordetails.right[1]
     tov = fordetails.right[2]
     nexts = Node("nonode", left=fordetails.left)
@@ -424,11 +434,7 @@ def cmpl(node):
       mov(varias[vname], "ebx")
       cmp("esi", "ebx")
       asm("jle ." + nname2)
-      asm("." + nname + ":")
-      #breaker = "." + nname
-      cmpl(node.left)
-      return None;
-    else:
+      cmpl(node.left.left)
       quit("Prenamed variable <{}>!".format(vname))
   elif node.left != None and node.left.type == "if_statement":
     things = node.left.right.right
@@ -445,6 +451,7 @@ def cmpl(node):
       prefix = "ne"
     elif things[2] == "TT_DNEQUAL":
       prefix = "e"
+      cmpl(node.left.left)
     elif things[2] == "TT_GRTHAN":
       prefix = "le"
     elif things[2] == "TT_LTHAN":
@@ -465,7 +472,8 @@ def cmpl(node):
     #print(node.left.left)
     ins = Node("nonode", left=node.left.right.left)
     cmpl(things[0])
-    push("ecx")
+    push("ecx")    
+    #print(node.right.right)
     cmpl(things[1])
     pop("edx")
     cmp("ecx", "edx")
@@ -527,6 +535,10 @@ def cmpl(node):
         v = True
       if not v:
         asm("movl %ecx, " + varias[node.left.left.right])
+      ss = []
+      if automakeStruct != False:
+        cmpl(fparse(lex("{} as struct {};".format(node.left.left.right, automakeStruct)), "tmp"))
+        automakeStruct = False
       cmpl(node.left.left)
       return None
     else:
@@ -548,13 +560,16 @@ def cmpl(node):
         v = True
       if not v:
         asm("movl %ecx, " + varias[node.left.left.right])
-      cmpl(node.left.left)
+      if automakeStruct != False:
+        cmpl(fparse(lex("{} as struct {};".format(node.left.left.right, automakeStruct)), "tmp"))
+        automakeStruct = False
       return None
     else:
       quit("Prenamed variable <" + str(node.left.left.right) + ">!")
 
   elif node.left != None and node.left.type == "asm_line":
     v = node.left.right
+    cmpl(node.left.left)
     v = v[1:-1]
     for var in varias:
       v = v.replace("~~" + var, varias[var])
@@ -581,6 +596,7 @@ def cmpl(node):
     
     elif is_valid_struct_def(node.left.left.right):
       val = node.left.left.right
+      cmpl(node.left.left)
       cmpl(node.left.right)
       x = checkStructDef(val)
       if x[0] in fstructs:
@@ -788,7 +804,7 @@ def cmpl(node):
       for arg in reversed(args):
         if arg == "":
           break
-        else:
+        else:    
           #print(arg)
           bo, ty, node = checkExpr(lex(arg + "\n"))
           if bo:
@@ -796,8 +812,12 @@ def cmpl(node):
             push("ecx")
           else:
             quit("Invalid expression <" + arg + ">!")
+      if fn in structs.keys():
+        automakeStruct = fn
       asm("call " + fn)
       mov("eax", "ecx")
+
+
       #pop("ebx")
     else:
       asm("movl $" + val + ", %ecx")
@@ -808,6 +828,18 @@ def cmpl(node):
   elif node.type == "add":
     #asm("xorl %edx, %edx")
     x = cmpl(node.right)
+    if is_valid_variable_name(node.left.right):
+  
+      if node.left.right in fstructs and node.left.right in varias:
+        fsn = fstructs[node.left.right]
+        if fsn.stype + "__add__" in funcs.keys():
+          vvalue = fsn.stype
+          push("ecx")
+          y = cmpl(node.left)
+          push("ecx")
+          asm('call ' + fsn.stype + "__add__")
+          asm("movl %eax, %ecx")
+          return None
     push("ecx")
     y = cmpl(node.left)
     pop("edx")
@@ -816,6 +848,17 @@ def cmpl(node):
   elif node.type == "minus":
     #asm("xorl %edx, %edx")
     x = cmpl(node.right)
+    if is_valid_variable_name(node.left.right):
+      if node.left.right in fstructs and node.left.right in varias:
+        fsn = fstructs[node.left.right]
+        if fsn.stype + "__sub__" in funcs.keys():
+          vvalue = fsn.stype
+          push("ecx")
+          y = cmpl(node.left)
+          push("ecx")
+          asm('call ' + fsn.stype + "__sub__")
+          asm("movl %eax, %ecx")
+          return None
     push("ecx")
     y = cmpl(node.left)
     pop("edx")
@@ -826,6 +869,17 @@ def cmpl(node):
   elif node.type == "mul":
     #asm("xorl %edx, %edx")
     x = cmpl(node.right)
+    if is_valid_variable_name(node.left.right):
+      if node.left.right in fstructs and node.left.right in varias:
+        fsn = fstructs[node.left.right]
+        if fsn.stype + "__mul__" in funcs.keys():
+          vvalue = fsn.stype
+          push("ecx")
+          y = cmpl(node.left)
+          push("ecx")
+          asm('call ' + fsn.stype + "__mul__")
+          asm("movl %eax, %ecx")
+          return None
     push("ecx")
     y = cmpl(node.left)
     pop("edx")
@@ -835,6 +889,17 @@ def cmpl(node):
   elif node.type == "div":
     #push("eax")
     x = cmpl(node.left)
+    if is_valid_variable_name(node.left.right):
+      if node.left.right in fstructs and node.left.right in varias:
+        fsn = fstructs[node.left.right]
+        if fsn.stype + "__div__" in funcs.keys():
+          vvalue = fsn.stype
+          push("ecx")
+          y = cmpl(node.left)
+          push("ecx")
+          asm('call ' + fsn.stype + "__div__")
+          asm("movl %eax, %ecx")
+          return None
     push("ecx")
     y = cmpl(node.right)
     pop("eax")
@@ -846,6 +911,17 @@ def cmpl(node):
   elif node.type == "mod":
     #push("eax")
     y = cmpl(node.left)
+    if is_valid_variable_name(node.left.right):
+      if node.left.right in fstructs and node.left.right in varias:
+        fsn = fstructs[node.left.right]
+        if fsn.stype + "__mod__" in funcs.keys():
+          vvalue = fsn.stype
+          push("ecx")
+          y = cmpl(node.left)
+          push("ecx")
+          asm('call ' + fsn.stype + "__mod__")
+          asm("movl %eax, %ecx")
+          return None
     push("ecx")
     x = cmpl(node.right)
     pop("eax")

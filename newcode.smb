@@ -1,8 +1,406 @@
 
 
-fn main() => {
-    let x = i8:100;
-    strcpy(x, "Hello World");
-    printf("%s\n", x);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+~
+
+        Imports are pretty simple.
+
+
+
+        Just the "io.smb" and "base.smb" libaries.
+
+~
+
+
+
+
+new struct Size {
+
+    size
+
+}
+
+
+
+new struct Space {
+
+    space,
+
+    size
+
+}
+
+
+
+const LINUX_SYSCALL = 0x80;
+
+
+
+fn Size(n) => {
+
+    Size size = n;
+
+    return size;
+
+}
+
+
+
+fn Space(size) => {
+
+    let spacePtr = malloc(size);
+
+    Space space = spacePtr, size;
+
+    return space;
+
+}
+
+
+
+fn resizeSpace(space, newSize) => {
+
+    space as struct Space;
+
+    let spacePtr = space.space;
+
+    let newSpacePtr = realloc(spacePtr, newSize);
+
+    memcpy(newSpacePtr, spacePtr, space.size);
+
+    space.space = newSpacePtr;
+
+    space.size = newSize;
+
     return 0;
+
+}
+
+
+
+fn write(data, size, fileDescriptor) => {
+
+    size as struct Size;
+
+    let dataSize = size.size;
+
+    asm "movl ~~size, %edx";
+
+    asm "movl ~~data, %ecx";
+
+    asm "movl ~~fileDescriptor, %ebx";
+
+    asm "movl $4, %eax";
+
+    asm "movl ~~LINUX_SYSCALL, %edi"
+
+    asm "int %edi";
+
+    return 0;
+
+}
+
+
+
+~
+
+    Semble STDLIB Reference -
+
+        + "base.smb"
+
+            + Size (struct)
+
+                + size - integer
+
+            + Space (struct)
+
+                + space - pointer to space
+
+                + size - integer
+
+            + Size (function) - returns object of type Size
+
+                + n - integer
+
+            + Space (function) - returns object of type Space
+
+                + n - integer
+
+            + resizeSpace (function) - returns Nothing
+
+                + space - space variable
+
+                + newSize - integer
+
+            + write (function) - returns Nothing
+
+                + data - data to write
+
+                + size - integer
+
+                + fileDescriptor - fileDescriptor/filePointer to location
+
+        + "strings.smb"
+
+            + String (struct)
+
+                + value - str
+
+                + length - integer
+
+                + location - hex value
+
+            + createString (function) - returns object of type String
+
+                + value - String
+
+            + str
+
+~
+
+
+
+
+fn print(s) => {
+
+    printf("%s\n", s);
+
+}
+
+
+
+~
+
+    The data structures are simple.
+
+~
+
+
+
+new struct String {
+
+    value,
+
+    length,
+
+    location
+
+}
+
+
+
+~
+
+    Now for the functions.
+
+~
+
+
+
+fn String(value) => {
+
+    String str =  value;
+
+    let len = strlen(value);
+
+    str.length = len;
+
+    str.location = @str;
+
+    return str;
+
+}
+
+
+
+fn stringLength(str) => {
+
+    Size strsize = false;
+
+    strsize.size = strlen(str);
+
+    return strsize;
+
+}
+
+
+
+fn nullLength(value) => {
+
+    return strlen(value);
+
+}
+
+
+
+fn areStringsEqual(string1, string2) => {
+
+    string1 as struct String;
+
+    string2 as struct String;
+
+    if strcmp(string1.value, string2.value) = 0;
+
+        return true;
+
+    endif;
+
+    return false;
+
+}
+
+
+
+fn copyString(string1, string2) => {
+
+    string1 as struct String;
+
+    string2 as struct String;
+
+    strcpy(string1.value, string2.value);
+
+    return 0;
+
+}
+
+
+
+fn stringCat(string1, string2) => {
+
+    string1 as struct String;
+
+    string2 as struct String;
+
+    let s = Space(1000);
+
+    s as struct Space;
+
+    strcpy(s.space, string1.value);
+
+    strcat(s.space, string2.value);
+
+    return s;
+
+}
+
+
+
+
+
+
+
+fn String__add__(string1, string2) => {
+
+    string1 as struct String;
+
+    string2 as struct String;
+
+    let s = Space(1000); 
+
+    s as struct Space;
+
+    let x = string1.value;
+
+    strcpy(s.space, x);
+
+    strcat(s.space, string2.value);
+
+    String bs = s.space;
+
+    return bs;
+
+}
+
+
+
+fn String__sub__(string1, string2) => {
+
+    string1 as struct String;
+
+    string2 as struct String;
+
+}
+
+fn main() => {
+    let x = String("Hello ");
+    let y = String("World!");
+    let z = String(" Jimmy!");
+    let a = x + y + z;
+    a as struct String;
+    printf("%s\n", a.value);
 }

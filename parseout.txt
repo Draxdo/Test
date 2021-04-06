@@ -1,20 +1,59 @@
 [
  Node: Type: global Left: [
+ Node: Type: sdef Left: [
+ Node: Type: sdef Left: [
+ Node: Type: cgdec Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: sdef Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
+ Node: Type: fdef1 Left: [
  Node: Type: fdef1 Left: None Right: [
  Node: Type: finfo Left: [
  Node: Type: funcdef Left: [
  Node: Type: int_dec Left: [
  Node: Type: identifier Left: [
- Node: Type: funccall Left: [
- Node: Type: funccall Left: [
- Node: Type: return_statement Left: None Right: [
- Node: Type: int_val Left: None Right: 0 ]
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: None Right: printf("%s\n", a.value) ]
+ Right: ('a', 'String') ]
+ Right: a ]
+ Right: [
+ Node: Type: add Left: [
+ Node: Type: int_val Left: None Right: x ]
+ Right: [
+ Node: Type: add Left: [
+ Node: Type: int_val Left: None Right: y ]
+ Right: [
+ Node: Type: int_val Left: None Right: z ]
  ]
- Right: printf("%s\n", x) ]
- Right: strcpy(x, "Hello World") ]
+ ]
+ ]
+ Right: z ]
+ Right: [
+ Node: Type: int_val Left: None Right: String(" Jimmy!") ]
+ ]
+ Right: y ]
+ Right: [
+ Node: Type: int_val Left: None Right: String("World!") ]
+ ]
  Right: x ]
  Right: [
- Node: Type: int_val Left: None Right: i8:100 ]
+ Node: Type: int_val Left: None Right: String("Hello ") ]
  ]
  Right: [
 Token: TokenType: TT_FUNCCALL TokenValue: main()]
@@ -22,5 +61,396 @@ Token: TokenType: TT_FUNCCALL TokenValue: main()]
  Right: [
 '']
  ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: asstruct Left: None Right: ('string2', 'String') ]
+ Right: ('string1', 'String') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: String__sub__(string1, string2)]
+ ]
+ Right: [
+'string1', 'string2']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: [
+ Node: Type: srdef Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: bs ]
+ ]
+ Right: ('String', 'bs', [
+[
+[
+Token: TokenType: TT_STRUCTDEF TokenValue: s.space]
+]
+]
+) ]
+ Right: strcat(s.space, string2.value) ]
+ Right: strcpy(s.space, x) ]
+ Right: x ]
+ Right: [
+ Node: Type: int_val Left: None Right: string1.value ]
+ ]
+ Right: ('s', 'Space') ]
+ Right: s ]
+ Right: [
+ Node: Type: int_val Left: None Right: Space(1000) ]
+ ]
+ Right: ('string2', 'String') ]
+ Right: ('string1', 'String') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: String__add__(string1, string2)]
+ ]
+ Right: [
+'string1', 'string2']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: s ]
+ ]
+ Right: strcat(s.space, string2.value) ]
+ Right: strcpy(s.space, string1.value) ]
+ Right: ('s', 'Space') ]
+ Right: s ]
+ Right: [
+ Node: Type: int_val Left: None Right: Space(1000) ]
+ ]
+ Right: ('string2', 'String') ]
+ Right: ('string1', 'String') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: stringCat(string1, string2)]
+ ]
+ Right: [
+'string1', 'string2']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: funccall Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: strcpy(string1.value, string2.value) ]
+ Right: ('string2', 'String') ]
+ Right: ('string1', 'String') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: copyString(string1, string2)]
+ ]
+ Right: [
+'string1', 'string2']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: if_statement Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: false ]
+ ]
+ Right: [
+ Node: Type: if_details Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: true ]
+ ]
+ Right: ([
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+strcmp(string1.value, string2.value)]
+ ]
+, [
+ Node: Type: [
+int_val]
+ Left: [
+None]
+ Right: [
+0]
+ ]
+, 'TT_EQUALS') ]
+ ]
+ Right: ('string2', 'String') ]
+ Right: ('string1', 'String') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: areStringsEqual(string1, string2)]
+ ]
+ Right: [
+'string1', 'string2']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: strlen(value) ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: nullLength(value)]
+ ]
+ Right: [
+'value']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: srdef Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: strsize ]
+ ]
+ Right: strsize.size ]
+ Right: [
+ Node: Type: int_val Left: None Right: strlen(str) ]
+ ]
+ Right: ('Size', 'strsize', [
+[
+[
+Token: TokenType: TT_KEYWORD TokenValue: false]
+]
+]
+) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: stringLength(str)]
+ ]
+ Right: [
+'str']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: srdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: str ]
+ ]
+ Right: str.location ]
+ Right: [
+ Node: Type: int_val Left: None Right: @str ]
+ ]
+ Right: str.length ]
+ Right: [
+ Node: Type: int_val Left: None Right: len ]
+ ]
+ Right: len ]
+ Right: [
+ Node: Type: int_val Left: None Right: strlen(value) ]
+ ]
+ Right: ('String', 'str', [
+[
+[
+Token: TokenType: TT_IDENTIFIER TokenValue: value]
+]
+]
+) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: String(value)]
+ ]
+ Right: [
+'value']
+ ]
+ ]
+ Right: [
+ Node: Type: sinfo Left: [
+ Node: Type: structdef Left: [
+ Node: Type: stiden Left: [
+ Node: Type: stiden Left: [
+ Node: Type: stiden Left: None Right: location ]
+ Right: length ]
+ Right: value ]
+ Right: None ]
+ Right: String ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: funccall Left: None Right: printf("%s\n", s) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: print(s)]
+ ]
+ Right: [
+'s']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: asm_line Left: [
+ Node: Type: asm_line Left: [
+ Node: Type: asm_line Left: [
+ Node: Type: asm_line Left: [
+ Node: Type: asm_line Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: "movl ~~LINUX_SYSCALL, %edi" ]
+ Right: "movl $4, %eax" ]
+ Right: "movl ~~fileDescriptor, %ebx" ]
+ Right: "movl ~~data, %ecx" ]
+ Right: "movl ~~size, %edx" ]
+ Right: dataSize ]
+ Right: [
+ Node: Type: int_val Left: None Right: size.size ]
+ ]
+ Right: ('size', 'Size') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: write(data, size, fileDescriptor)]
+ ]
+ Right: [
+'data', 'size', 'fileDescriptor']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: asstruct Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: funccall Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: set_mov_equals Left: [
+ Node: Type: identifier Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: 0 ]
+ ]
+ Right: space.size ]
+ Right: [
+ Node: Type: int_val Left: None Right: newSize ]
+ ]
+ Right: space.space ]
+ Right: [
+ Node: Type: int_val Left: None Right: newSpacePtr ]
+ ]
+ Right: memcpy(newSpacePtr, spacePtr, space.size) ]
+ Right: newSpacePtr ]
+ Right: [
+ Node: Type: int_val Left: None Right: realloc(spacePtr, newSize) ]
+ ]
+ Right: spacePtr ]
+ Right: [
+ Node: Type: int_val Left: None Right: space.space ]
+ ]
+ Right: ('space', 'Space') ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: resizeSpace(space, newSize)]
+ ]
+ Right: [
+'space', 'newSize']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: int_dec Left: [
+ Node: Type: identifier Left: [
+ Node: Type: srdef Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: space ]
+ ]
+ Right: ('Space', 'space', [
+[
+[
+Token: TokenType: TT_IDENTIFIER TokenValue: spacePtr]
+]
+, [
+[
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+]
+]
+) ]
+ Right: spacePtr ]
+ Right: [
+ Node: Type: int_val Left: None Right: malloc(size) ]
+ ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: Space(size)]
+ ]
+ Right: [
+'size']
+ ]
+ ]
+ Right: [
+ Node: Type: finfo Left: [
+ Node: Type: funcdef Left: [
+ Node: Type: srdef Left: [
+ Node: Type: return_statement Left: None Right: [
+ Node: Type: int_val Left: None Right: size ]
+ ]
+ Right: ('Size', 'size', [
+[
+[
+Token: TokenType: TT_IDENTIFIER TokenValue: n]
+]
+]
+) ]
+ Right: [
+Token: TokenType: TT_FUNCCALL TokenValue: Size(n)]
+ ]
+ Right: [
+'n']
+ ]
+ ]
+ Right: [
+ Node: Type: sinfo Left: [
+ Node: Type: int_val Left: None Right: 0x80 ]
+ Right: LINUX_SYSCALL ]
+ ]
+ Right: [
+ Node: Type: sinfo Left: [
+ Node: Type: structdef Left: [
+ Node: Type: stiden Left: [
+ Node: Type: stiden Left: None Right: size ]
+ Right: space ]
+ Right: None ]
+ Right: Space ]
+ ]
+ Right: [
+ Node: Type: sinfo Left: [
+ Node: Type: structdef Left: [
+ Node: Type: stiden Left: None Right: size ]
+ Right: None ]
+ Right: Size ]
  ]
  Right: None ]

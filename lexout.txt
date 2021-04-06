@@ -1,5 +1,681 @@
 [
 [
+Token: TokenType: TT_KEYWORD TokenValue: new]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Size]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: new]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Space]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: space]
+, [
+Token: TokenType: TT_COMMA TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: const]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: LINUX_SYSCALL]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_HEX TokenValue: 0x80]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: Size(n)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Size]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: n]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: Space(size)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: spacePtr]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: malloc(size)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Space]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: space]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: spacePtr]
+, [
+Token: TokenType: TT_COMMA TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: resizeSpace(space, newSize)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: space]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: spacePtr]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: space.space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: newSpacePtr]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: realloc(spacePtr, newSize)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: memcpy(newSpacePtr, spacePtr, space.size)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: space.space]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: newSpacePtr]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: space.size]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: newSize]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_INTEGER TokenValue: 0]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: write(data, size, fileDescriptor)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: size]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Size]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: dataSize]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: size.size]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "movl ~~size, %edx"]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "movl ~~data, %ecx"]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "movl ~~fileDescriptor, %ebx"]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "movl $4, %eax"]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "movl ~~LINUX_SYSCALL, %edi"]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: asm]
+, [
+Token: TokenType: TT_STRING TokenValue: "int %edi"]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_INTEGER TokenValue: 0]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: print(s)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: printf("%s\n", s)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: new]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: value]
+, [
+Token: TokenType: TT_COMMA TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: length]
+, [
+Token: TokenType: TT_COMMA TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: location]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: String(value)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: str]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: value]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: len]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strlen(value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: str.length]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: len]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: str.location]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_AMPOINT TokenValue: @str]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: str]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: stringLength(str)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Size]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: strsize]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: false]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: strsize.size]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strlen(str)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: strsize]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: nullLength(value)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strlen(value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: areStringsEqual(string1, string2)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string1]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string2]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: if]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcmp(string1.value, string2.value)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_INTEGER TokenValue: 0]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: true]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: endif]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: false]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: copyString(string1, string2)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string1]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string2]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcpy(string1.value, string2.value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_INTEGER TokenValue: 0]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: stringCat(string1, string2)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string1]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string2]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: s]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: Space(1000)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: s]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcpy(s.space, string1.value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcat(s.space, string2.value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: s]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: String__add__(string1, string2)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string1]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string2]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: s]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: Space(1000)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: s]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: Space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: x]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: string1.value]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcpy(s.space, x)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: strcat(s.space, string2.value)]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: bs]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_STRUCTDEF TokenValue: s.space]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: return]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: bs]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: fn]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: String__sub__(string1, string2)]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_GRTHAN TokenValue: None]
+, [
+Token: TokenType: TT_LBRACE TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string1]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: string2]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_RBRACE TokenValue: None]
+, [
 Token: TokenType: TT_KEYWORD TokenValue: fn]
 , [
 Token: TokenType: TT_FUNCCALL TokenValue: main()]
@@ -16,21 +692,59 @@ Token: TokenType: TT_IDENTIFIER TokenValue: x]
 , [
 Token: TokenType: TT_EQUALS TokenValue: None]
 , [
-Token: TokenType: TT_BYTES TokenValue: i8:100]
+Token: TokenType: TT_FUNCCALL TokenValue: String("Hello ")]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
-Token: TokenType: TT_FUNCCALL TokenValue: strcpy(x, "Hello World")]
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: y]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: String("World!")]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
-Token: TokenType: TT_FUNCCALL TokenValue: printf("%s\n", x)]
+Token: TokenType: TT_KEYWORD TokenValue: let]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: z]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: String(" Jimmy!")]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
-Token: TokenType: TT_KEYWORD TokenValue: return]
+Token: TokenType: TT_KEYWORD TokenValue: let]
 , [
-Token: TokenType: TT_INTEGER TokenValue: 0]
+Token: TokenType: TT_IDENTIFIER TokenValue: a]
+, [
+Token: TokenType: TT_EQUALS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: x]
+, [
+Token: TokenType: TT_PLUS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: y]
+, [
+Token: TokenType: TT_PLUS TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: z]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: a]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: as]
+, [
+Token: TokenType: TT_KEYWORD TokenValue: struct]
+, [
+Token: TokenType: TT_IDENTIFIER TokenValue: String]
+, [
+Token: TokenType: TT_SEMICOLON TokenValue: None]
+, [
+Token: TokenType: TT_FUNCCALL TokenValue: printf("%s\n", a.value)]
 , [
 Token: TokenType: TT_SEMICOLON TokenValue: None]
 , [
