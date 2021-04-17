@@ -1,43 +1,140 @@
-# Semble Programming Language
+# Semble or SembleLang
 
-Have you ever wanted something with *easy* syntax that is as *fast*¹ as C?
+*Currently in Open Beta*
 
-Well, look no further than Semble or SembleLang.
+### Duck typing. Faster than C.
 
-Semble is a low-level, fast, easy-to-learn, general-purpose programming language that compiles right to AT&T syntax x86² Assembly!
+## DISCLAIMERratch makes things hard.
 
-With libc built-in don't worry about losing all that precious knowledge you have built up about `scanf()` this and `strcat()` that. As for beginner's, Semble comes with another stdlib that builds on top on libc to provide easy-to-use functions for all sorts of things!
+It comes with its own big standard library but also with libc functions.
 
-## Coding in semble
+It has the following features (some may be buggy which will be fixed in the 1.0).
+  The langauge is not finished although it is about a month or so from it's 1.0
 
-#### Variable declaration:
+### What is SembleLang?
 
-```rust
-fn main => {
-  let x = 6;
-  let y = "Hello World!";
-  let z = 'a';
-  let a = true;
-  let b = 0x0f;
-  let c = @x;
-  let d = $c;
+SembleLang is a low-level simple language that compiles directly down to AT&T syntax x86 Assembly.
+
+The claim "faster than C" is somewhat true as it mostly only *competes* with C speed as C is very well optimized and writing everything from sc
++ Variables
++ Functions
++ Structs
++ Arrays
++ Vectors (in the "vectors.smb" library like C++)
++ Strings (both strs and a String in the "strings.smb" library like C++)
++ Standard library
++ Custom operator meanings for Structs
++ Inline Assembly
++ If Statements
++ For and While Loops
++ I/O
++ Libc
++ File Interactions
++ Imports
++ Comments
++ Multiline Comments
++ All the basic types (ints, bools, hex values, chars, etc.)
+
+I plan on adding the following features in time:
+
++ Networking
++ Multithreading
++ Namespaces
++ Classes
++ Cryptography
++ Package Manager
+
+# Examples
+
+## Recursive Fibbonaci(10)
+
+![Code for it](https://imgur.com/PND6CC0)
+
+## Person Data Structure
+
+![Code for it](https://imgur.com/9bZgGyH)
+
+## Vectors Example
+
+![Code for it](https://imgur.com/0sAZDAC)
+
+# Working with Semble
+
+To start open your text editor of choice, if you decided to install the VSCode extension during the install, you may want to choose VSCode.
+
+Then, create a file in the current directory witn the *.smb* extension.
+
+This can be done with:
+```
+$ touch *.smb
+```
+
+Where `*` is the filename.
+
+Then for a *Hello, World!* program write the following code.
+
+```
+#program main
+#include io.smb
+
+fn main() => {
+  print("Hello, World!");
 }
 ```
 
-#### Functions
+To compile, write this command in the directory in which your program is.
 
-```rust
-fn name => {
-  // code
-  let y = name();
-}
+```
+$ semble *.smb
 ```
 
-#### Pointers
+Where `*` is the filename.
 
+To run your code type the following command.
 
+```
+$ ./main
+```
 
-### Footnotes
+The reason the output is *main* is because that is what we specified with `#program main`, we could've put any valid filename there and if we dont put a `#program` header it defaults to the name *semble.out*.
 
-- 1 - you usually dont see easy and fast put together!
-- 2 - yes, it is 32-bit.
+# Information
+
+The current deadline for 1.0 is a month and a half.
+
+Comment down below that you want to be pinged on release if you want to be pinged.
+
+The website is almost done and is being developed by @Coder100
+
+Currently, Semble only works on Debian-based systems.
+
+I spent ~3 months on this project.
+
+It is currently in Open Beta with an installer available on the github, soon enough this installer will be available on the website.
+
+The compiler is written in Python with a C++ interface (what I mean is a compiled C++ binary is put in /usr/lib/ and that calls the Python code in a directory like /home/wuru/.semble/)
+
+Semble is currently under the MIT license.
+
+# Special thanks
+
+Although the language was developed by me only, there have been people who helped motivate and guide me.
+
++ @Coder100 - Web Developer and guiding me
++ @RickMiller - Guiding and encouraging me
+
+And that is just a start, many people whom do not have repl.it helped me as well.
+
+# Conclusion
+
+Semble goes to show that simplicity and speed can both be achieved at the same time.
+
+While it is not as easy as something like Python, it is more like easier than/as easy as C++.
+
+To see a bigger Semble project I would suggest looking at the github and looking in the */libs/* folder as it also gives you a greater understanding of the language.
+
+I will write another post when 1.0 comes out, and ping the people whom ask to be pinged in that post.
+
+If you like the language and ideas behind it, consider upvoting the post as that will help more people see the language.
+
+Have a great day! - @Wuru

@@ -36,7 +36,7 @@
 //
 //          - dunder @ SembleLang Team
 
-#include baase.smb
+#include base.smb
 #include io.smb
 
 // Data Structures
@@ -86,19 +86,19 @@ const CALL_SYS_LSEEK = 19;
 
 fn generateFileWrite(filename) => {
   let fp = fopen(filename, "w+");
-  def new File file filename, fp;
+  File file = filename, fp;
   return file;
 }
 
 fn generateFileReadOnly(filename) => {
   let fp = fopen(filename, "r");
-  def new File file filename, fp;
+  File file = filename, fp;
   return file;
 }
 
 fn generateFileAppend(filename) => {
   let fp = fopen(filename, "a+");
-  def new File file filename, fp;
+  File file = filename, fp;
   return file;
 }
 
@@ -122,12 +122,7 @@ fn readFile(file, bytes, buffer) => {
   return 0;
 }
 
-fn generateFileRelationShip(filename1, filename2) => {
-  def new FileRelationship filerel generateFileAppend(filename1), generateFileAppend(filename2);
-  return filerel; 
-}
-
-fn readFileLine(file, buffer) => {
+~fn readFileLine(file, buffer) => {
   file as struct File;
   let c = ' ';
   for i from 0 to 1000;
@@ -137,5 +132,4 @@ fn readFileLine(file, buffer) => {
     endif;
     strncat(buffer, @c, 1);
   endfor;
-}
-
+}~

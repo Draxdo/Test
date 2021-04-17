@@ -38,7 +38,10 @@ varias = {
 }
 
 data = {
+  
 }
+
+data["clearBuffer"] = ".asciz \"[semble] clearing output buffer. IF you see this message, you're program has encountered an error in the stdout buffer\\n\""
 
 globalss = {
 
@@ -201,7 +204,6 @@ console = Console("console.txt")
 
 def cmpl(node):
   global vvalue, automakeStruct, splaces, n, currentFunc, funcs, varias, funcnums, funcargs, nextAdd, breaker, fstructs, funcleaves, consts, constglobals, globalss
-  #print(fstructs)
   #print(varias)
   #print("Entered cmpl()")
   #print("node.left: {}".format(node.left))
@@ -349,7 +351,7 @@ def cmpl(node):
       except:
         x = False
       if x == False:
-        asm("movl $0, %ecx")
+        asm("xorl %ecx, %ecx")
       else:
         cmpl(checkExpr(stuffs[idx])[2])
       asm("movl " + v + ", %ebx")
@@ -365,8 +367,6 @@ def cmpl(node):
       
 
   elif node.left != None and node.left.type == "asstruct":
-    if automakeStruct == True:
-      print("jeee")
     if node.left.right[0] in varias:
       try:
         #print(structs.keys())
@@ -397,7 +397,10 @@ def cmpl(node):
       if arg == "":
         break
       else:
-        bo, ty, no = checkExpr(lex(arg + "\n"))
+        try:
+          bo, ty, no = checkExpr(lex(arg + "\n"))
+        except:
+          quit("Invalid expression '" + arg + "'!")
         if bo:
           cmpl(no)
           push("ecx")
@@ -412,6 +415,7 @@ def cmpl(node):
     fordetails = node.left.right
     fromv = fordetails.right[1]
     tov = fordetails.right[2]
+    vname = fordetails.right[0]
     nexts = Node("nonode", left=fordetails.left)
     if vname not in varias:
       cmpl(fromv)
@@ -431,10 +435,16 @@ def cmpl(node):
       cmpl(nexts)
       breaker.pop(-1)
       asm("incl " + varias[vname])
+      cmpl(tov)
+      mov("ecx", "esi")
       mov(varias[vname], "ebx")
       cmp("esi", "ebx")
       asm("jle ." + nname2)
-      cmpl(node.left.left)
+      asm("." + nname + ":")
+      #asm("pushl $clearBuffer")
+      #asm("call printf")
+      cmpl(node.left)
+    else:
       quit("Prenamed variable <{}>!".format(vname))
   elif node.left != None and node.left.type == "if_statement":
     things = node.left.right.right
@@ -467,6 +477,7 @@ def cmpl(node):
     cmpl(node.left)
 
   elif node.left != None and node.left.type == "while_loop":
+    #print(fstructs)
     things = node.left.right.right
     #print("\n\n#################\n\n" + str(node.left) + "\n\n")
     #print(node.left.left)
@@ -593,11 +604,12 @@ def cmpl(node):
       asm("movl %ecx, " + varias[node.left.left.right])
       cmpl(node.left.left)
       return None
-    
+
     elif is_valid_struct_def(node.left.left.right):
       val = node.left.left.right
-      cmpl(node.left.left)
+      #cmpl(node.left.left)
       cmpl(node.left.right)
+      #print(node.left.right)
       x = checkStructDef(val)
       if x[0] in fstructs:
         #print(x[0])
@@ -614,30 +626,67 @@ def cmpl(node):
           return None
         else:
           quit("Unknown variable '{}'!".format(x[0]))
+
     elif checkIndexRef(node.left.left.right)[0]:
       val = node.left.left.right
-      b, fn, index = checkIndexRef(val)
-      #print(varias[fn])
-      val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
-      ab = int(val)
-      cmpl(checkExpr(lex(index + "\n"))[2])
-      mul(4, "ecx")
-      asm("cmpl $0, %ecx")
-      asm("jz .sksb" + str(n))
-      asm("subl $1, %ecx")
-      asm(".sksb" + str(n) + ":")
-      n += 1
-      add(str(ab), "ecx")
-      #print(val)
-      #print(ab)
-      asm("movl %ebp, %edi")
-      sub("ecx", "edi")
+      b, fn, indexs = checkIndexRef(val)
+      # b = if it worked
+      # fn = object referenced
+      # index = index referenced
+      
+      idx = 0
+      for index in indexs:
+        #print(index)
+        if index[0] == "_":
+          ati = 1
+          index = index[1:]
+          #print(index)
+        else:
+          ati = 4
+        if idx == 0:
+          if is_valid_struct_def(fn):
+            x = checkStructDef(fn)
+            #print(x[0])
+            #print(fstructs)
+            if x[0] in fstructs:
+              #print(x[0])
+              fstructs[x[0]].getvalue(x[1])
+              asm("movl " + varias[x[0]] + ", %ebx")
+              if x[1] in fstructs[x[0]].variz:
+                if str(fstructs[x[0]].variz.index(x[1]) * 4) == "0":
+                  prefix = ""
+                else:
+                  prefix = "" + str(fstructs[x[0]].variz.index(x[1]) * 4)
+                asm("movl " + prefix + "(%ebx), %ecx")
+                ptr = "%ecx"
+                #print("movl " + prefix + "(%ebx), %ecx")
+              else:
+                quit("Semble: Error: Data structure '{}' has no type '{}'!".format(x[0], x[1]))
+            else:
+              #print(x)
+              quit("Unknown type '{}'!".format(x[0]))
+          else:
+            ptr = varias[fn]
+        else:
+          ptr = "%ecx"
+        asm("movl " + ptr + ", %ebx")
+        bo, ty, no = checkExpr(lex(str(index) + "\n"))
+        if not bo:
+          quit("Invalid expression '{}'".format(str(index)))
+        cmpl(no)
+        mul(ati, "ecx")
+        asm("addl %ecx, %ebx")
+        asm("movl (%ebx), %ecx")
+        idx += 1
+      
       cmpl(node.left.right)
-      asm("movl %ecx, (%ebp)")
+      asm("movl %ecx, (%ebx)")
       cmpl(node.left.left)
       return None
+    
     else:
       quit("Unknown variable <" + node.left.left.right +">!")
+    
 
   elif node.left != None and node.left.type == "quit_statement":
     cmpl(node.left.right)
@@ -659,8 +708,155 @@ def cmpl(node):
       if val == "true":
         asm("movl $1, %ecx")
       else:
-        asm("movl $0, %ecx")
+        asm("movl $0, %ecx")      
 
+    if re.match(r"^\d+\.\d+$", val):
+      n += 1
+      x = "doubleLOCK" + str(n)
+      data[] = ".double {}".format(val)
+      n += 1
+      asm("movl ${}, %ecx".format(x))
+
+    elif re.match(r"^\[(.*)\]\[(.*\,)*(.*)\]$", val):
+      x = re.match(r"^\[(.*)\]\[(.*\,)*(.*)\]$", val)
+      length = x.group(1)
+      try:
+        values = x.group(2) + x.group(3)
+        args = parseFuncCall(values)
+      except:
+        args = None
+      tmpid = 0
+      tmpida = 0
+      tmpi = ""
+      tmp = ""
+      new = []
+      if args == None:
+        new = []
+      else:
+        for i in args:
+          if i == "(" and tmpi == "":
+            tmp += i
+            tmpid += 1
+          elif i == ")" and tmpi == "":
+            tmp += i
+            tmpid -= 1
+          elif i == "[" and tmpi == "":
+            tmp += i
+            tmpida += 1
+          elif i == "]" and tmpi == "":
+            tmp += i
+            tmpida -= 1
+          elif i == "\"" and tmpi == "":
+            tmp += i
+            tmpi = "quote"
+          elif i == "\"" and tmpi == "quote":
+            tmp += i
+            tmpi = ""
+          elif i == "'" and tmpi == "":
+            tmp += i
+            tmpi = "char"
+          elif i == "'" and tmpi == "char":
+            tmp += i
+            tmpi = ""
+          elif tmpid == 0 and tmpida == 0 and i == "," and tmpi == "":
+            new.append(tmp)
+            tmp = ""
+          else:
+            tmp += i
+        new.append(tmp)
+      #print(new)
+      idx = 0
+      if length[0] == "_":
+        ati = 1
+        length = length[1:]
+      else:
+        ati = 4
+      bo, ty, no = checkExpr(lex(length + "\n"))
+      if not bo:
+        quit("Invalid expression '{}'!".format(length))
+      cmpl(no)
+      mul(ati, "ecx")
+      asm("pushl %ecx")
+      asm("call malloc")
+      funcnums[currentFunc] += 4
+      v = "-" + str(funcnums[currentFunc]) + "(%ebp)"
+      asm("movl %eax, " + v)
+      for arg in new:
+        #print(lex(arg + " "))
+        #print(list(arg + " "))
+        if arg != "":
+          if idx == 0:
+            prefix = ""
+          else:
+            prefix = "" + str(idx * 4)
+          try:
+            bo, ty, no = checkExpr(lex(arg + "\n"))
+          except:
+            quit("Invalid expression '{}'".format(arg))
+          if not bo:
+            quit("Invalid expression '{}'".format(arg))
+          cmpl(no)
+          asm("movl " + v + ", %ebx")
+          asm("movl %ecx, " + prefix + "(%ebx)")
+          idx += 1
+        else:
+          break
+      asm("movl " + v + ", %ecx")
+
+    elif checkIndexRef(val)[0]:
+      b, fn, indexs = checkIndexRef(val)
+      # b = if it worked
+      # fn = object referenced
+      # index = index referenced
+
+      #print(checkIndexRef(val))
+      
+      idx = 0
+      for index in indexs:
+        if index[0] == "_":
+          ati = 1
+          index = index[1:]
+          #print(index)
+        else:
+          ati = 4
+        #print(index)
+        if idx == 0:
+          #print(fn)
+          if is_valid_struct_def(fn):
+            x = checkStructDef(fn)
+            #print(x[0])
+            #print(fstructs)
+            if x[0] in fstructs:
+              #print(x[0])
+              fstructs[x[0]].getvalue(x[1])
+              asm("movl " + varias[x[0]] + ", %ebx")
+              if x[1] in fstructs[x[0]].variz:
+                if str(fstructs[x[0]].variz.index(x[1]) * 4) == "0":
+                  prefix = ""
+                else:
+                  prefix = "" + str(fstructs[x[0]].variz.index(x[1]) * 4)
+                asm("movl " + prefix + "(%ebx), %ecx")
+                ptr = "%ecx"
+                #print("movl " + prefix + "(%ebx), %ecx")
+              else:
+                quit("Semble: Error: Data structure '{}' has no type '{}'!".format(x[0], x[1]))
+            else:
+              #print(x)
+              quit("Unknown type '{}'!".format(x[0]))
+          else:
+            ptr = varias[fn]
+        else:
+          ptr = "%ecx"
+        asm("movl " + ptr + ", %ebx")
+        bo, ty, no = checkExpr(lex(str(index) + "\n"))
+        if not bo:
+          quit("Invalid expression '{}'".format(str(index)))
+        cmpl(no)
+        mul(ati, "ecx")
+        asm("addl %ecx, %ebx")
+        asm("movl (%ebx), %ecx")
+        idx += 1
+      
     elif is_valid_struct_def(val):
       x = checkStructDef(val)
       #print(x[0])
@@ -677,85 +873,12 @@ def cmpl(node):
           asm("movl " + prefix + "(%ebx), %ecx")
           #print("movl " + prefix + "(%ebx), %ecx")
         else:
+          print(x)
+          print(val)
           quit("Semble: Error: Data structure '{}' has no type '{}'!".format(x[0], x[1]))
       else:
+        #print(x)
         quit("Unknown type '{}'!".format(x[0]))
-
-    elif checkIndexRef(val)[0]:
-      b, fn, index = checkIndexRef(val)
-      print(varias[fn])
-      val = re.match(r"^\-(\d+)\(\%ebp\)$", varias[fn]).group(1)
-      ab = int(val)
-      cmpl(checkExpr(lex(index + "\n"))[2])
-      mul(4, "ecx")
-      asm("cmpl $0, %ecx")
-      asm("je .sksb" + str(n))
-      asm("subl $1, %ecx")
-      asm(".sksb" + str(n) + ":")
-      n += 1
-      add(str(ab), "ecx")
-      print(val)
-      print(ab)
-      asm("movl %ebp, %edi")
-      sub("ecx", "edi")
-      asm("movl (%ebp), %ecx")
-
-    elif re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val):
-      x = re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", val)
-      length = x.group(1)
-      values = x.group(2) + x.group(3)
-      args = parseFuncCall(values)
-      tmpid = 0
-      tmpi = ""
-      tmp = ""
-      new = []
-      for i in args:
-        if i == "(" and tmpi == "":
-          tmp += i
-          tmpid += 1
-        elif i == ")" and tmpi == "":
-          tmp += i
-          tmpid -= 1
-        elif i == "\"" and tmpi == "":
-          tmp += i
-          tmpi = "quote"
-        elif i == "\"" and tmpi == "quote":
-          tmp += i
-          tmpi = ""
-        elif i == "'" and tmpi == "":
-          tmp += i
-          tmpi = "char"
-        elif i == "'" and tmpi == "char":
-          tmp += i
-          tmpi = ""
-        elif tmpid == 0 and i == "," and tmpi == "":
-          new.append(tmp)
-          tmp = ""
-        else:
-          tmp += i
-      new.append(tmp)
-      #print(new)
-      fnc = funcnums[currentFunc] + 4
-      idx = 0
-      #print(new)
-      for arg in new:
-        #print(lex(arg + " "))
-        #print(list(arg + " "))
-        if arg != "":
-          b, ty, no = checkExpr(lex(arg + " "))
-          if not b:
-            quit("Invalid expression '" + arg + "'!")
-          else:
-            cmpl(no)
-            print(no)
-            asm("movl %ecx, -" + str(fnc + (4 * idx)) + "(%ebp)")
-            idx += 1
-        else:
-          break
-      #asm("movl $0, %ecx")
-      nextAdd += (4 * int(length)) - 4
-
-
 
     elif re.match(r"^(i8:)\d+$", val):
       v = val[3:]
@@ -771,6 +894,7 @@ def cmpl(node):
         data[x] = ".asciz " + val
         strings[val] = x
         asm("movl $" + x + ", %ecx")
+        return ["str", val]
       else:
         asm("movl $" + strings[val] + ", %ecx")
 
@@ -820,7 +944,10 @@ def cmpl(node):
 
       #pop("ebx")
     else:
-      asm("movl $" + val + ", %ecx")
+      if val == "0":
+        asm("xorl %ecx, %ecx")
+      else:
+        asm("movl $" + val + ", %ecx")
       return val
 
 
@@ -839,6 +966,7 @@ def cmpl(node):
           push("ecx")
           asm('call ' + fsn.stype + "__add__")
           asm("movl %eax, %ecx")
+          automakeStruct = fsn.stype
           return None
     push("ecx")
     y = cmpl(node.left)
@@ -858,6 +986,7 @@ def cmpl(node):
           push("ecx")
           asm('call ' + fsn.stype + "__sub__")
           asm("movl %eax, %ecx")
+          automakeStruct = fsn.stype
           return None
     push("ecx")
     y = cmpl(node.left)
@@ -879,6 +1008,7 @@ def cmpl(node):
           push("ecx")
           asm('call ' + fsn.stype + "__mul__")
           asm("movl %eax, %ecx")
+          automakeStruct = fsn.stype
           return None
     push("ecx")
     y = cmpl(node.left)
@@ -899,6 +1029,7 @@ def cmpl(node):
           push("ecx")
           asm('call ' + fsn.stype + "__div__")
           asm("movl %eax, %ecx")
+          automakeStruct = fsn.stype
           return None
     push("ecx")
     y = cmpl(node.right)
@@ -921,6 +1052,7 @@ def cmpl(node):
           push("ecx")
           asm('call ' + fsn.stype + "__mod__")
           asm("movl %eax, %ecx")
+          automakeStruct = fsn.stype
           return None
     push("ecx")
     x = cmpl(node.right)
@@ -953,7 +1085,7 @@ def cmpf(ast, f):
   }
 
   data = {
-    
+    #"clearBuffer": ".asciz \"[semble] clearing output buffer. IF you see this message, you're program has encountered an error in the stdout buffer\\n\"" 
   }
 
   strings = {
@@ -971,7 +1103,7 @@ def cmpf(ast, f):
       for i in fi:
         #print(i)
         fw.write("\t" + i + "\n")
-    fw.write("\n\nL45SDEF:\n\n")
+    #fw.write("\n\nL45SDEF:\n\n")
     # fw.write("\t.section .bss\n")
     fw.write("\t.section .bss\n")
     for b in bss:

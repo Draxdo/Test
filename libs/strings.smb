@@ -5,7 +5,6 @@
 //          - SembleLang v1+
 //          - Access to libc (default compilation)
 //          - Semble "base.smb"
-//          - Semble "io.smb"
 //       
 //        This library is under the same license as SembleLang itself, as it comes with the language.
 //        This liscense being the MIT license:    
@@ -43,8 +42,6 @@
 ~
 
 #include base.smb
-
-#include io.smb
 
 ~
     The data structures are simple.
@@ -104,12 +101,6 @@ fn stringCat(string1, string2) => {
     return s;
 }
 
-fn stringFormatInteger(format, v) => {
-    let i = 10;
-    format as struct String;
-    for x from 0 to format.size;
-}
-
 // Operators
 
 fn String__add__(string1, string2) => {
@@ -122,9 +113,4 @@ fn String__add__(string1, string2) => {
     strcat(s.space, string2.value);
     String bs = s.space;
     return bs;
-}
-
-fn String__sub__(string1, string2) => {
-    string1 as struct String;
-    string2 as struct String;
 }

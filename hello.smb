@@ -1,11 +1,13 @@
 #program main
-#include strings.smb
+#include vector.smb
+#include math.smb
 
 fn main() => {
-    let x = String("Hello ");
-    let y = String("World!");
-    let z = String(" Jimmy!");
-    let a = x + y + z;
-    a as struct String;
-    printf("%s\n", a.value);
+    let x = Vector(10, [10][1, 2, 3, 4]);
+    initRand();
+    for i from 0 to x.length - 1;
+        x.value[i] = randRange(0, 100);
+    endfor;
+    printIntegerVector(x);
 }
+

@@ -13,6 +13,21 @@ class Token:
   def __repr__(self):
     return '[Token: TokenType: {} TokenValue: {}]'.format(self.T_TYPE, self.value)
 
+def getIndexs(v):
+  depth = 0
+  values = []
+  for i in v:
+    if i == "[":
+      depth += 1
+      if len(values) < depth:
+        values.append("")
+    elif i == "]":
+      continue
+    else:
+      values[depth - 1] += i 
+  #print(values)
+  return values
+
 def checkIndexRef(s):
   vn = ""
   n = ""
@@ -24,9 +39,8 @@ def checkIndexRef(s):
     else:
       vn += i
   ns = s[idx:]
-  if re.match(r"^\[([^\n\]]+)\]$", ns):
-    x = re.match(r"^\[([^\n\]]+)\]$", ns)
-    v = x.group(1)
+  if re.match(r"^(\[[^\n\]]+\])+$", ns):
+    v = getIndexs(ns)
     return True, vn, v
 
   else:
@@ -52,12 +66,14 @@ def parseFuncCall(s):
     else:
       new += i
 
-    if i == ")" and tmpid in ["paren"]:
+    if i in [")", "]"] and tmpid in ["paren"]:
       if n == 0:
         tmpid = ""
       else:
         n -= 1
     elif i == "(" and tmpid in ["paren", ""]:
+      n += 1
+    elif i == "[" and tmpid in ["paren", ""]:
       n += 1
     elif i == "\"" and tmpid in ["quote"]:
       tmpid = ""
@@ -86,6 +102,7 @@ def checkFuncCall(s):
     args = s[idx:-1]
     args = parseFuncCall(args)
     tmpid = 0
+    tmpida = 0
     tmpi = ""
     tmp = ""
     new = []
@@ -97,6 +114,12 @@ def checkFuncCall(s):
       elif i == ")" and tmpi == "":
         tmp += i
         tmpid -= 1
+      elif i == "[" and tmpi == "":
+        tmp += i
+        tmpida += 1
+      elif i == "]" and tmpi == "":
+        tmp += i
+        tmpida -= 1
       elif i == "\"" and tmpi == "":
         tmp += i
         tmpi = "quote"
@@ -109,7 +132,7 @@ def checkFuncCall(s):
       elif i == "'" and tmpi == "char":
         tmp += i
         tmpi = ""
-      elif tmpid == 0 and i == "," and tmpi == "":
+      elif tmpid == 0 and tmpida == 0 and i == "," and tmpi == "":
         new.append(tmp)
         tmp = ""
       else:
@@ -137,6 +160,7 @@ TT_IDENTIFIER = "TT_IDENTIFIER"
 TT_LBRACE = "TT_LBRACE"
 TT_RBRACE = "TT_RBRACE"
 TT_STRING = "TT_STRING"
+TT_DEC = "TT_DEC"
 TT_AMPOINT = "TT_AMPOINT"
 TT_PTR = "TT_PTR"
 TT_FUNCCALL = "TT_FUNCCALL"
@@ -360,9 +384,9 @@ def lex(s):
       tmpid = ""
       tmp = ""
 
-    elif re.match(r"^\[(\d+)\]\[(.*\,)*(.*)\]$", tmp):
-      #print("hello")
-      tokens.append(Token(TT_ARR, tmp))
+    elif re.match(r"^\d+\.\d+$", tmp):
+      print("Found double: {}".format(tmp))
+      tokens.append(Token(TT_DEC, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""
@@ -373,9 +397,23 @@ def lex(s):
         tmp2 = ""
       tmpid = ""
       tmp = ""
-      
+
     elif checkIndexRef(tmp)[0]:
       tokens.append(Token(TT_INDEXREF, tmp))
+      if tmpid == "semi":
+        tokens.append(Token(TT_SEMICOLON))
+        tmpid = ""
+        tmp2 = ""
+      elif tmpid == "comma":
+        tokens.append(Token(TT_COMMA))
+        tmpid = ""
+        tmp2 = ""
+      tmpid = ""
+      tmp = ""
+
+    elif re.match(r"^\[(.*)\]\[(.*\,)*(.*)\]$", tmp):
+      #print("hello")
+      tokens.append(Token(TT_ARR, tmp))
       if tmpid == "semi":
         tokens.append(Token(TT_SEMICOLON))
         tmpid = ""

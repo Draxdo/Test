@@ -10,7 +10,7 @@ import sys
 def main(file, n=None, first=False):
 
   import os
-  debug = True
+  debug = False
 
   version = "Beta 2.5"
 
@@ -51,4 +51,7 @@ if __name__ == '__main__':
   #if re.match(r"^\[\d+\]\[(.*\,)*(.*)\]$", "[7][6, 6,]"):
   #  print("hello")
   #print(src.lex.checkIndexRef("hello[5]"))
+  #print(re.match(r"^(\[[^\n\]]+\])+$", "[56][65][67]"))
+  #src.lex.getIndexs("[56][65][67]")
+  #print(src.lex.checkIndexRef("people.names[3]"))
   main(sys.argv[1], first=True)

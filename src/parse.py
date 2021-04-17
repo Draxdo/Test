@@ -40,6 +40,8 @@ def checkExpr(tokens):
       return True, "ampoint", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_INDEXREF":
       return True, "indexref", Node("int_val", right=tokens[0].getTokenValue())
+    elif tokens[0].getTokenType() == "TT_DEC":
+      return True, "double", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_ARR":
       return True, "arr", Node("int_val", right=tokens[0].getTokenValue())
     elif tokens[0].getTokenType() == "TT_BYTES":
